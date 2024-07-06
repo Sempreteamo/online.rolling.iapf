@@ -5,7 +5,7 @@ library(roxygen2)
 Napf = N = 200
 lag = 10
 Time = 200
-d_ = 5
+d_ = 2
 alpha = 0.42
 a <- matrix(nrow = d_, ncol = d_)
 for (i in 1:d_){
@@ -22,14 +22,14 @@ dt_ <- ct_ <- matrix(0, d_, 1)
 Tt_ <- a
 P0_ <- Zt_ <- Ht_ <- Gt_ <- diag(1, d_, d_)
 a0_ <- rep(0, d_)
-model <- list(ini_mu = ini, ini_cov = ini_c, A = a, B = b, C = c, D = D_, k = k_, 
-              tau = tau_, kappa = kappa_, dt = dt_, ct = ct_, Tt = Tt_, P0 = P0_, Zt = Zt_, 
+model <- list(ini_mu = ini, ini_cov = ini_c, A = a, B = b, C = c, D = D_, k = k_,
+              tau = tau_, kappa = kappa_, dt = dt_, ct = ct_, Tt = Tt_, P0 = P0_, Zt = Zt_,
               Ht = Ht_, Gt = Gt_, a0 = a0_, d = d_)
 
 obs_ <- sample_obs(model, Time)
 
 output <- generate_blocks(lag, Time)
-breaks_ <- output[[1]] 
+breaks_ <- output[[1]]
 psi_index_ <- output[[2]]
 
 data <- list(obs = obs_, breaks = breaks_, psi_index = psi_index_)
@@ -44,7 +44,8 @@ ratio <- vector()
 dist <- vector()
 for (qq in 1:1) {
   set.seed(qq*2)
-  ratio[qq] <- run_quasi_online_pf(model, data, lag, Napf, N, kalman)[[5]]
-  dist[qq] <- run_quasi_online_pf(model, data, lag, Napf, N, kalman)[[6]]
+  output <- run_quasi_online_pf(model, data, lag, Napf, N, kalman)
+  ratio[qq] <- output[[5]]
+  dist[qq] <- output[[6]]
 }
 
