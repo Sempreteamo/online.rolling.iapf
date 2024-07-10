@@ -23,4 +23,4 @@ sample_twisted_initial <- function(params, psi, N){
   return(samples)
 }
 
-#' @import FKF
+#' @import mvnfast
