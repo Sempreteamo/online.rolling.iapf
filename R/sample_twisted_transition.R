@@ -27,4 +27,4 @@ sample_twisted_transition <- function(x, model, psi, N){
   return(samples)
 }
 
-#' @import FKF
+#' @import mvnfast
