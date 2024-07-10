@@ -28,3 +28,5 @@ sample_obs <- function(model, N){
   }
   return(data)
 }
+
+#' @import FKF
