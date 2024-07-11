@@ -12,7 +12,7 @@ compute_dKS <- function(x, w, fks.obj){
     fks_mean <- fks.obj$ahatt[,t]
     fks_cov <- fks.obj$Vt[,,t]
 
-    dist[t] <- mahalanobis(weighted_mean, fks_mean, fks_cov)/d
+    dist[t] <- mahalanobis(weighted_mean, fks_mean, fks_cov)
   }
 
   plot(dist)
