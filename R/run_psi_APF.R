@@ -162,7 +162,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
       }
     }else{
-      ancestors[t,] <- ancestors[t-1,]
+      ancestors[t,] <- 1:N
       for(i in 1:N){
 
         X[t,i,] <- sample_twisted_transition(X[t-1, i,], model, psi_pa[t,], 1)
