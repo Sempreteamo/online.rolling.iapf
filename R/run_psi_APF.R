@@ -30,7 +30,11 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   breaks <- data[[2]]
   w_previous <- data[[3]]
   X_previous <- data[[4]]
-  Time <- nrow(obs)
+  if(d != 1){
+    Time <- nrow(obs)
+  }else{
+    Time <- nrow(matrix(obs, ncol = 1))
+  }
   kappa <- model$kappa
   ancestors <- matrix(NA, Time, N)
   resample_time <- vector()
@@ -44,9 +48,9 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
     if(breaks[1] == 1){
       #the first block. break controls which block the algorithm is running
 
-      X[1,,] <- rnorm(N*d)
+      X[1, ,] <- rnorm(N * d)
       for(i in 1:N){
-        w[1,i] <- evaluate_log_g(model, X[1,i,], obs[1,])
+        w[1,i] <- evaluate_log_g(model, X[1,i,], obs[1, drop = FALSE])
       }
 
 
