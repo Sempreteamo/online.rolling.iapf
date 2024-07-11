@@ -9,6 +9,6 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: mvnfast
+Imports: mvnfast,
          FKF
 RoxygenNote: 7.2.3
