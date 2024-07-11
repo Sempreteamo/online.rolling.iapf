@@ -39,7 +39,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   w <- matrix(NA, Time, N)
   logZ <- 0
 
-  #'init' controls the the condition where we conduct the initialization
+  #init controls the the condition where we conduct the initialization
   if(init){
     if(breaks[1] == 1){
       #the first block. break controls which block the algorithm is running
