@@ -75,14 +75,14 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
         for(i in 1:N){
 
           X[t,i,] <- rmvn(1, A%*%X[t-1, ancestors[t,i],], B)
-          w[t,i] <- evaluate_log_g(model, X[t,i,], obs[t,])
+          w[t,i] <- evaluate_log_g(model, X[t,i,], obs[t, drop = FALSE])
         }
 
       }else{
         ancestors[t,] <- ancestors[t-1,]
         for(i in 1:N){
           X[t,i,] <- rmvn(1, A%*%X[t-1, i,], B)
-          w[t,i] <- w[t-1,i] + evaluate_log_g(model, X[t,i,], obs[t,])
+          w[t,i] <- w[t-1,i] + evaluate_log_g(model, X[t,i,], obs[t, drop = FALSE])
         }
       }
     }
