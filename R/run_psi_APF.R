@@ -54,7 +54,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
       s <- resample(w_previous, mode = 'multi')
       for(i in 1:N){
-        X[1,i,] <- rmvn(1, A%*%X_previous[s[i],], B)
+        X[1,i,] <- rmvn(1, A%*%X_previous[s[i], drop = FALSE], B)
         w[1, i] <- evaluate_log_g(model, X[1,i,], obs[1, drop = FALSE])
       }
     }
@@ -103,16 +103,17 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       w_adj <- vector()
 
       for(i in 1:N){
-        w_adj[i] <- w_previous[i]*exp(1/2*(t(A%*%X_previous[i,]) + t(psi_pa[1,1:d])%*%
+        w_adj[i] <- w_previous[i]*exp(1/2*(t(A%*%X_previous[i, drop = FALSE]) + t(psi_pa[1,1:d])%*%
                                              diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d))%*%diag((psi_pa[1, (d+1):(d+d)]^(-2) + 1)^(-1), nrow=d,ncol=d)%*%
-                                        (A%*%X_previous[i,] + diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]) - 1/2*(t(A%*%X_previous[i,])%*%A%*%X_previous[i,] +
+                                        (A%*%X_previous[i, drop = FALSE] + diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]) -
+                                        1/2*(t(A%*%X_previous[i, drop = FALSE])%*%A%*%X_previous[i, drop = FALSE] +
                                           t(psi_pa[1,1:d])%*%diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]))
       }
 
       s <- resample(w_adj, mode = 'multi')
 
       for (i in 1:N){
-        X[1, i, ] <- sample_twisted_transition(X_previous[s[i],], model, psi_pa[1,], 1)
+        X[1, i, ] <- sample_twisted_transition(X_previous[s[i], drop = FALSE], model, psi_pa[1,], 1)
         w[1, i] <- eval_twisted_potential(model, list(psi_pa[1,], psi_pa[2,], psi_pa[1,]), X[1,i,], obs[1, drop = FALSE])
       }
 
