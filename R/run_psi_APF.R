@@ -26,10 +26,10 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   C <- model$C
   D <- model$D
   d <- model$d
-  obs <- data[[1]]
+  obs <- as.matrix(data[[1]])
   breaks <- data[[2]]
   w_previous <- data[[3]]
-  X_previous <- data[[4]]
+  X_previous <- as.matrix(data[[4]])
   Time <- nrow(as.matrix(obs))
   kappa <- model$kappa
   ancestors <- matrix(NA, Time, N)
@@ -46,7 +46,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
       X[1, ,] <- rnorm(N * d)
       for(i in 1:N){
-        w[1,i] <- evaluate_log_g(model, X[1,i,], obs[1, drop = FALSE])
+        w[1,i] <- evaluate_log_g(model, X[1,i,], obs[1,, drop = FALSE])
       }
 
 
@@ -54,8 +54,8 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
       s <- resample(w_previous, mode = 'multi')
       for(i in 1:N){
-        X[1,i,] <- rmvn(1, A%*%X_previous[s[i], drop = FALSE], B)
-        w[1, i] <- evaluate_log_g(model, X[1,i,], obs[1, drop = FALSE])
+        X[1,i,] <- rmvn(1, A%*%X_previous[s[i],, drop = FALSE], B)
+        w[1, i] <- evaluate_log_g(model, X[1,i,], obs[1, , drop = FALSE])
       }
     }
 
@@ -71,14 +71,14 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
         for(i in 1:N){
 
           X[t,i,] <- rmvn(1, A%*%X[t-1, ancestors[t,i],], B)
-          w[t,i] <- evaluate_log_g(model, X[t,i,], obs[t, drop = FALSE])
+          w[t,i] <- evaluate_log_g(model, X[t,i,], obs[t,, drop = FALSE])
         }
 
       }else{
         ancestors[t,] <- ancestors[t-1,]
         for(i in 1:N){
           X[t,i,] <- rmvn(1, A%*%X[t-1, i,], B)
-          w[t,i] <- w[t-1,i] + evaluate_log_g(model, X[t,i,], obs[t, drop = FALSE])
+          w[t,i] <- w[t-1,i] + evaluate_log_g(model, X[t,i,], obs[t, ,drop = FALSE])
         }
       }
     }
@@ -95,7 +95,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       X[1,,] <- sample_twisted_initial(list(mean = ini_mu, cov = ini_cov), psi_pa[1,], N)
 
       for(i in 1:N){
-        w[1,i] <- eval_twisted_potential(model, list(psi_pa[1,], psi_pa[2,], psi_pa[1,]), X[1,i,], obs[1, drop = FALSE])
+        w[1,i] <- eval_twisted_potential(model, list(psi_pa[1,], psi_pa[2,], psi_pa[1,]), X[1,i,], obs[1, ,drop = FALSE])
       }
 
     }else{
@@ -103,18 +103,18 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       w_adj <- vector()
 
       for(i in 1:N){
-        w_adj[i] <- w_previous[i]*exp(1/2*(t(A%*%X_previous[i, drop = FALSE]) + t(psi_pa[1,1:d])%*%
+        w_adj[i] <- w_previous[i]*exp(1/2*(t(A%*%X_previous[i,, drop = FALSE]) + t(psi_pa[1,1:d])%*%
                                              diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d))%*%diag((psi_pa[1, (d+1):(d+d)]^(-2) + 1)^(-1), nrow=d,ncol=d)%*%
-                                        (A%*%X_previous[i, drop = FALSE] + diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]) -
-                                        1/2*(t(A%*%X_previous[i, drop = FALSE])%*%A%*%X_previous[i, drop = FALSE] +
+                                        (A%*%X_previous[i, ,drop = FALSE] + diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]) -
+                                        1/2*(t(A%*%X_previous[i, ,drop = FALSE])%*%A%*%X_previous[i,, drop = FALSE] +
                                           t(psi_pa[1,1:d])%*%diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]))
       }
 
       s <- resample(w_adj, mode = 'multi')
 
       for (i in 1:N){
-        X[1, i, ] <- sample_twisted_transition(X_previous[s[i], drop = FALSE], model, psi_pa[1,], 1)
-        w[1, i] <- eval_twisted_potential(model, list(psi_pa[1,], psi_pa[2,], psi_pa[1,]), X[1,i,], obs[1, drop = FALSE])
+        X[1, i, ] <- sample_twisted_transition(X_previous[s[i],, drop = FALSE], model, psi_pa[1,], 1)
+        w[1, i] <- eval_twisted_potential(model, list(psi_pa[1,], psi_pa[2,], psi_pa[1,]), X[1,i,], obs[1,, drop = FALSE])
       }
 
     }
@@ -133,7 +133,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
         for(i in 1:N){
           #print(psi_pa[t+1,])
           X[t,i,] <- sample_twisted_transition(X[t-1, ancestors[t,i],], model, psi_pa[t,], 1)
-          w[t,i] <- eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], obs[t, drop = FALSE])
+          w[t,i] <- eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], obs[t, ,drop = FALSE])
 
         }
       }else{
@@ -141,7 +141,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
         for(i in 1:N){
           #print(psi_pa[t+1,])
           X[t,i,] <- sample_twisted_transition(X[t-1, i,], model, psi_pa[t,], 1)
-          w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], obs[t, drop = FALSE])
+          w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], obs[t,, drop = FALSE])
         }
       }
 
@@ -158,15 +158,15 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       for(i in 1:N){
         #filtering particles
         X[t,i,] <- sample_twisted_transition(X[t-1, ancestors[t,i],], model, psi_pa[t,], 1)
-        w[t,i] <- eval_twisted_potential(model, list(NA, NA, psi_pa[t,]), X[t,i,], obs[t, drop = FALSE])
+        w[t,i] <- eval_twisted_potential(model, list(NA, NA, psi_pa[t,]), X[t,i,], obs[t, ,drop = FALSE])
 
       }
     }else{
-      ancestors[t,] <- 1:N
+      ancestors[t,] <- 1:N #?
       for(i in 1:N){
 
         X[t,i,] <- sample_twisted_transition(X[t-1, i,], model, psi_pa[t,], 1)
-        w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, NA, psi_pa[t,]), X[t,i,], obs[t, drop = FALSE])
+        w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, NA, psi_pa[t,]), X[t,i,], obs[t,, drop = FALSE])
       }
     }
 
