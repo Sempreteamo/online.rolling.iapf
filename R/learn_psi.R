@@ -14,6 +14,7 @@ learn_psi <- function(x, obs, model){
   Time <- output[1]
   N <- output[2]
   d <- output[3]
+  obs <- as.matrix(obs)
   psi <- matrix(NA, nrow = Time, ncol = N)
   psi_pa <- matrix(NA, nrow = Time, ncol = 2*d)
 
