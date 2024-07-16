@@ -23,10 +23,10 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N, filter){
   resample_time <- output1[[5]]
 
   for(i in 1:N){
-    Xs[i, Time,] <- X[i, Time,]
+    Xs[Time, i,] <- X[Time, i,]
     a <- ancestors[Time, i]
     for (t in (Time-1):1) {
-      Xs[i, t, ] <- X[i, a, ]
+      Xs[t, i,] <- X[t, a,]
       a <- ancestors[t, a]
     }
   }
