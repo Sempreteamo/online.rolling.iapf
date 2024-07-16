@@ -22,7 +22,7 @@ learn_psi <- function(x, obs, model){
 
     if(t == Time){
       for(i in 1:N){
-        dif <- x[t, i,] - obs[t, ,drop = FALSE]
+        dif <- as.vector(x[t, i,] - obs[t, ,drop = FALSE])
 
         psi[t,i] <- (1 / ((2 * pi)^(d / 2))) *
           exp(-0.5 * t(dif) %*% dif)
