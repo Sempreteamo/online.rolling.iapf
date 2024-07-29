@@ -9,7 +9,6 @@
 #'
 #' @export
 #'
-#' @examples
 compute_filtering <- function(model, data){
   a0 <- model$a0
   P0 <- model$P0
