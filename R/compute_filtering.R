@@ -24,3 +24,5 @@ compute_filtering <- function(model, data){
 
   return(list(fkf.obj, fks.obj))
 }
+
+#' @import FKF
