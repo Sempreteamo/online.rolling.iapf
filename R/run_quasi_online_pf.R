@@ -1,4 +1,23 @@
 
+#' Function to run the whole iAPF processes and generate final results
+#'
+#' @param model Model information
+#' @param data Observations
+#' @param lag Length of time intervals
+#' @param Napf Number of particles used in the smoothing process
+#' @param N Number of particles used in the filtering process
+#' @param filter The filter method used. For linear Gaussian models, it is set to be Kalman filter
+#'
+#' @return A list contains
+#' X is the particles
+#' w is the weights of particles
+#' logZ is the estimated normalising constant
+#' Xs is the smoothing particles
+#' log_ratio is the log_ratio between estimates and real normalising constant
+#' dist is the distance between real estimates and smoothing distribution
+#'
+#' @export
+#'
 run_quasi_online_pf <- function(model, data, lag, Napf, N, filter){
   breaks <- data$breaks
   index <- data$psi_index
@@ -39,9 +58,9 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N, filter){
 
   log_ratio <- compute_log_ratio(logZ, fkf.obj)
 
-  KS_dist <- compute_dKS(X, w, fks.obj)
+  dist <- compute_dKS(X, w, fks.obj)
 
-  return(list(X = X, w = w, logZ = logZ, Xs = Xs, log_ratio = log_ratio, KS_dist = KS_dist))
+  return(list(X = X, w = w, logZ = logZ, Xs = Xs, log_ratio = log_ratio, dist = dist))
 }
 
 
