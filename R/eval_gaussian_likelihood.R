@@ -6,19 +6,22 @@
 #' @param model List containing model parameters
 #' @param x State at which to evaluate
 #' @param datum Data point at which to evaluate
+#' @param dist Distribution of the density function
 #'
 #' @return Log-density of the observation density
 #' @export
 #'
-eval_gaussian_likelihood <- function(model, x, datum) {
-  obs_mean <- model$obs_mean
-  obs_cov <- model$obs_cov
-  d <- length(x)
+evaluate_likelihood <- function(model, x, datum, dist = 'Gaussian') {
+  if(dist == 'Gaussian'){
+    obs_mean <- model$obs_mean
+    obs_cov <- model$obs_cov
+    d <- length(x)
 
-  dif <- as.vector(datum) - obs_mean %*% x
+    dif <- as.vector(datum) - obs_mean %*% x
 
-  likelihood <- (-d / 2) * log(2 * pi) - (1 / 2) * log(prod(diag(obs_cov))) -
-    (1 / 2) * t(dif) %*% solve(obs_cov) %*% dif
+    likelihood <- (-d / 2) * log(2 * pi) - (1 / 2) * log(prod(diag(obs_cov))) -
+      (1 / 2) * t(dif) %*% solve(obs_cov) %*% dif
+  }
 
   return(likelihood)
 }
