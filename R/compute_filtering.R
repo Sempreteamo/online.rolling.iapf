@@ -1,6 +1,6 @@
-#' Function to compute filtering results for Gaussian linear models
+#' Function to compute filtering results for Gaussian linear model
 #'
-#' @param model Information of the model
+#' @param params Information of the model
 #' @param data Observations
 #'
 #' @return A list contains:
@@ -9,15 +9,15 @@
 #'
 #' @export
 #'
-compute_filtering <- function(model, data){
-  a0 <- model$a0
-  P0 <- model$P0
-  dt <- model$dt
-  ct <- model$ct
-  Tt <- model$Tt
-  Zt <- model$Zt
-  Ht <- model$Ht
-  Gt <- model$Gt
+compute_filtering <- function(params, data){
+  a0 <- params$a0
+  P0 <- params$P0
+  dt <- params$dt
+  ct <- params$ct
+  Tt <- params$Tt
+  Zt <- params$Zt
+  Ht <- params$Ht
+  Gt <- params$Gt
   obs <- data$obs
   fkf.obj <- fkf(a0, P0, dt, ct, Tt, Zt, Ht, Gt, yt = t(obs))
   fks.obj <- fks(fkf.obj)
