@@ -11,8 +11,8 @@
 #' @return Log-density of the observation density
 #' @export
 #'
-evaluate_likelihood <- function(model, x, datum, dist = 'Gaussian') {
-  if(dist == 'Gaussian'){
+evaluate_likelihood <- function(model, x, datum, dist = 'lg') {
+  if(dist == 'lg'){
     obs_mean <- model$obs_mean
     obs_cov <- model$obs_cov
     d <- length(x)
