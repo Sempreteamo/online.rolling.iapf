@@ -5,11 +5,12 @@
 #' @param x A collection of particle locations
 #' @param obs Observations
 #' @param model List containing model parameters
+#' @param likelihoods Likelihoods of the particles generated during the iAPF
 #'
 #' @return Twisting psi function parameters
 #' @export
 #'
-learn_psi <- function(x, obs, model){
+learn_psi <- function(x, obs, model, likelihoods){
   output <- dim(x)
   Time <- output[1]
   N <- output[2]
@@ -34,9 +35,7 @@ learn_psi <- function(x, obs, model){
 
       for(i in 1:N){
 
-        psi[t,i] <- exp(evaluate_log_g(model, x[t,i,], obs[t,, drop = FALSE]))*
-          exp(evaluate_psi_tilde(x[t,i,], psi_pa[t+1, ], model))
-
+        psi[t,i] <- exp(likelihoods[t,i] + evaluate_psi_tilde(x[t,i,], psi_pa[t+1, ], model))
 
       }
     }
