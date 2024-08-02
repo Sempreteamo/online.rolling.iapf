@@ -10,15 +10,15 @@
 #' @return Log-density of the observation density
 #' @export
 #'
-evaluate_likelihood <- function(model, x, datum) {
-  C <- model$C
-  D <- model$D
+eval_gaussian_likelihood <- function(model, x, datum) {
+  obs_mean <- model$obs_mean
+  obs_cov <- model$obs_cov
   d <- length(x)
 
-  dif <- as.vector(datum) - C %*% x
+  dif <- as.vector(datum) - obs_mean %*% x
 
-  likelihood <- (-d / 2) * log(2 * pi) - (1 / 2) * log(prod(diag(D))) -
-    (1 / 2) * t(dif) %*% solve(D) %*% dif
+  likelihood <- (-d / 2) * log(2 * pi) - (1 / 2) * log(prod(diag(obs_cov))) -
+    (1 / 2) * t(dif) %*% solve(obs_cov) %*% dif
 
   return(likelihood)
 }
