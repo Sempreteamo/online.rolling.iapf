@@ -9,7 +9,7 @@
 #'
 #' @export
 #'
-compute_filtering <- function(params, data){
+compute_fkf_filtering <- function(params, obs){
   a0 <- params$a0
   P0 <- params$P0
   dt <- params$dt
@@ -18,7 +18,6 @@ compute_filtering <- function(params, data){
   Zt <- params$Zt
   Ht <- params$Ht
   Gt <- params$Gt
-  obs <- data$obs
   fkf.obj <- fkf(a0, P0, dt, ct, Tt, Zt, Ht, Gt, yt = t(obs))
   fks.obj <- fks(fkf.obj)
 
