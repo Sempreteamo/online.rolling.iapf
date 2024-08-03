@@ -21,7 +21,7 @@ output <- generate_blocks(lag, Time)
 breaks_ <- output[[1]]
 psi_index_ <- output[[2]]
 
-obs_ <- sample_obs(tran_mu, tran_cov, Time, den_mean = 0, den_cov = 0, dist = 'lg') #provided by users
+obs_ <- sample_obs(tran_m, tran_c, den_mean, den_cov, Time, dist = 'lg') #provided by users
 
 dt_ <- ct_ <- matrix(0, d_, 1)
 Tt_ <- a
