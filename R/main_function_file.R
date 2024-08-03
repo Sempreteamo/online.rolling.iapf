@@ -14,8 +14,9 @@ for (i in 1:d_){
 }
 ini <- rep(0, d_)
 ini_c  <- alpha^2 / (1-alpha)^2
-tran_c = den_mean = den_cov = diag(1, nrow = d_, ncol = d_)
+tran_c = obs_m = obs_c = diag(1, nrow = d_, ncol = d_)
 parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
+obs_params <- list(obs_mean = obs_m, obs_cov = obs_c)
 
 output <- generate_blocks(lag, Time)
 breaks_ <- output[[1]]
@@ -35,7 +36,8 @@ fkf.obj_ <- output[[1]]
 fks.obj_ <- output[[2]]
 
 model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c,
-eval_likelihood = evaluate_likelihood(), parameters = parameters_, dist = 'lg')
+eval_likelihood = evaluate_likelihood, 
+parameters = parameters_, dist = 'lg')
 
 data <- list(obs = obs_, breaks = breaks_, psi_index = psi_index_)
 
