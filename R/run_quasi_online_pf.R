@@ -1,4 +1,3 @@
-
 #' Function to run the whole iAPF processes and generate final results
 #'
 #' @param model Model information
@@ -18,18 +17,20 @@
 #'
 #' @export
 #'
-run_quasi_online_pf <- function(model, data, lag, Napf, N, filter){
+run_quasi_online_pf <- function(model, data, lag, Napf, N){
   breaks <- data$breaks
   index <- data$psi_index
   obs <- data$obs
   fkf.obj <- filter$fkf.obj
   fks.obj <- filter$fks.obj
-  Xs <- array(NA, dim = c(nrow(obs), N, model$d))
+  Time <- nrow(obs)
+  d = ncol(obs)
+  Xs <- array(NA, dim = c(nrow(obs), N, d))
   output <- run_iAPF(model, data, Napf)
   #X <- output[[1]]
   #w <- output[[2]]
   psi_pa <- output[[3]]
-  logZ <- output[[4]]
+  #logZ <- output[[4]]
   #ancestors <- output[[5]]
 
   psi_final <- combine_psi(psi_pa, index)
@@ -56,11 +57,7 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N, filter){
   }
   #logZ <- logZ + normalise_weights_in_log_space(w[Time,])[[2]]
 
-  log_ratio <- compute_log_ratio(logZ, fkf.obj)
-
-  dist <- compute_dKS(X, w, fks.obj)
-
-  return(list(X = X, w = w, logZ = logZ, Xs = Xs, log_ratio = log_ratio, dist = dist))
+  return(list(X = X, w = w, logZ = logZ, Xs = Xs))
 }
 
 
