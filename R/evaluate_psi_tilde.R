@@ -12,11 +12,11 @@
 #'
 evaluate_psi_tilde <- function(x, psi_pa, model){  
   d <- length(x)
-  A <- model$A
-  B <- model$B
+  A <- model$tran_mu
+  B <- model$tran_cov
 
-  dif <- A%*%x - psi_pa[1:d]
-    
+  dif <- as.vector(A%*%x - psi_pa[1:d])
+ 
   psi_tilde <- (-d/2)*log(2*pi) - (1/2)*log(det(diag(psi_pa[(d+1):(d+d)] + diag(B), nrow=d, ncol=d))) +
     (-1/2)*t(dif)%*%diag((psi_pa[(d+1):(d+d)] + diag(B))^(-1), nrow=d,ncol=d)%*%dif
   
