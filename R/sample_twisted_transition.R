@@ -11,8 +11,8 @@
 #' @export
 #'
 sample_twisted_transition <- function(x, model, psi, N){
-  A <- model$A
-  B <- model$B
+  A <- model$tran_mu
+  B <- model$tran_cov
 
   params <- list(mean = A%*%x, cov = B)
 
