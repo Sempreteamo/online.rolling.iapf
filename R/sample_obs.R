@@ -9,10 +9,8 @@
 #' @return A list containing the observation sequence
 #' @export
 #'
-sample_obs <- function(tran_mu, tran_cov, den_mean = 0, den_cov = 0, Time, dist = 'lg'){
+sample_obs <- function(tran_mu, tran_cov, den_mean = 0, den_cov = 0, Time, d, dist = 'lg'){
   if(dist == 'lg'){
-    d <- model$d
-
     X <- matrix(0, nrow = Time, ncol = d)
     data <- matrix(0, nrow = Time, ncol = d)
 
