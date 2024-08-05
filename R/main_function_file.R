@@ -22,7 +22,7 @@ output <- generate_blocks(lag, Time)
 breaks_ <- output[[1]]
 psi_index_ <- output[[2]]
 
-obs_ <- sample_obs(tran_m, tran_c, den_mean, den_cov, Time, dist = 'lg') #provided by users
+obs_ <- sample_obs(tran_m, tran_c, den_mean, den_cov, Time, d_, dist = 'lg') #provided by users
 
 dt_ <- ct_ <- matrix(0, d_, 1)
 Tt_ <- tran_m
@@ -31,12 +31,12 @@ a0_ <- rep(0, d_)
 params <- list(dt = dt_, ct = ct_, Tt = Tt_, P0 = P0_, Zt = Zt_,
                Ht = Ht_, Gt = Gt_, a0 = a0_, d = d_)
 
-output <- compute_fkf_filtering(params, obs_)
-fkf.obj_ <- output[[1]]
-fks.obj_ <- output[[2]]
+filter <- compute_fkf_filtering(params, obs_)
+filtering <- filter[[1]]
+smoothing <- filter[[2]]
 
 model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c,
-eval_likelihood = evaluate_likelihood, 
+eval_likelihood = evaluate_likelihood,
 parameters = parameters_, dist = 'lg')
 
 data <- list(obs = obs_, breaks = breaks_, psi_index = psi_index_)
@@ -44,6 +44,13 @@ data <- list(obs = obs_, breaks = breaks_, psi_index = psi_index_)
 kalman <- list(fkf.obj = fkf.obj_, fks.obj  = fks.obj_ ) #provided by users
 
 #run the algorithm
-output <- run_quasi_online_pf(model, data, lag, Napf, N, kalman)
+output <- run_quasi_online_pf(model, data, lag, Napf, N)
+X<- output[[1]]
+w<- output[[2]]
+logZ <- output[[3]]
+
+log_ratio <- compute_log_ratio(logZ, filtering)
+
+dist <- compute_dKS(X, w, smoothing)
 #' }
 
