@@ -21,8 +21,6 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
   breaks <- data$breaks
   index <- data$psi_index
   obs <- data$obs
-  fkf.obj <- filter$fkf.obj
-  fks.obj <- filter$fks.obj
   Time <- nrow(obs)
   d = ncol(obs)
   Xs <- array(NA, dim = c(nrow(obs), N, d))
@@ -41,6 +39,7 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
   logZ <- output1[[3]]
   ancestors <- output1[[4]]
   resample_time <- output1[[5]]
+  avg <- output1[[7]]
 
   for(i in 1:N){
     Xs[Time, i,] <- X[Time, i,]
@@ -57,7 +56,7 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
   }
   #logZ <- logZ + normalise_weights_in_log_space(w[Time,])[[2]]
 
-  return(list(X = X, w = w, logZ = logZ, Xs = Xs))
+  return(list(X = X, w = w, logZ = logZ, Xs = Xs, avg = avg))
 }
 
 
