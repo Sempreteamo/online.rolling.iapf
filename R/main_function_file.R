@@ -1,10 +1,10 @@
 #' @examples
 #' \dontrun{
 #' The following parameters are provided by users
-Napf = N = 200
-lag = 50
-Time = 50
-d_ = 1
+Napf = N = 400
+lag = 10
+Time = 200
+d_ = 7
 alpha = 0.42
 tran_m <- matrix(nrow = d_, ncol = d_)
 for (i in 1:d_){
@@ -35,7 +35,7 @@ filter <- compute_fkf_filtering(params, obs_)
 filtering <- filter[[1]]
 smoothing <- filter[[2]]
 
-model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c, 
+model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c,
               obs_params = list(obs_mean = obs_m, obs_cov = obs_c),
               eval_likelihood = evaluate_likelihood,
 parameters = parameters_, dist = 'lg')
@@ -49,9 +49,12 @@ output <- run_quasi_online_pf(model, data, lag, Napf, N)
 X<- output[[1]]
 w<- output[[2]]
 logZ <- output[[3]]
+avg <- output[[5]]
 
 log_ratio <- compute_log_ratio(logZ, filtering)
 
 dist <- compute_dKS(X, w, smoothing)
+
+plot(x = c(1:Time), y = avg[1,])
 #' }
 
