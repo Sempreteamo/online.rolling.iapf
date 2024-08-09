@@ -1,10 +1,11 @@
 #' @examples
 #' \dontrun{
 #' The following parameters are provided by users
-Napf = N = 400
+library(mvnfast)
+Napf = N = 200
 lag = 10
-Time = 200
-d_ = 7
+Time = 10
+d_ = 1
 alpha = 0.42
 tran_m <- matrix(nrow = d_, ncol = d_)
 for (i in 1:d_){
@@ -22,7 +23,12 @@ output <- generate_blocks(lag, Time)
 breaks_ <- output[[1]]
 psi_index_ <- output[[2]]
 
-obs_ <- sample_obs(tran_m, tran_c, obs_m, obs_c, Time, d_, dist = 'lg') #provided by users
+model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c,
+              obs_params = list(obs_mean = obs_m, obs_cov = obs_c),
+              eval_likelihood = evaluate_likelihood,
+parameters = parameters_, dist = 'lg')
+
+obs_ <- sample_obs(model, Time, d_, dist = 'lg') #provided by users
 
 dt_ <- ct_ <- matrix(0, d_, 1)
 Tt_ <- tran_m
@@ -34,11 +40,6 @@ params <- list(dt = dt_, ct = ct_, Tt = Tt_, P0 = P0_, Zt = Zt_,
 filter <- compute_fkf_filtering(params, obs_)
 filtering <- filter[[1]]
 smoothing <- filter[[2]]
-
-model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c,
-              obs_params = list(obs_mean = obs_m, obs_cov = obs_c),
-              eval_likelihood = evaluate_likelihood,
-parameters = parameters_, dist = 'lg')
 
 data <- list(obs = obs_, breaks = breaks_, psi_index = psi_index_)
 
