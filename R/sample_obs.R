@@ -9,13 +9,12 @@
 #'
 #' @return A list containing the observation sequence
 #' @export
-#'
 sample_obs <- function(model, Time, d, dist = 'lg'){
   if(dist == 'lg'){
     tran_mu <- model$tran_m
     tran_cov <- model$tran_c
-    den_mean <- model$obs_params$obs_mean
-    den_cov <- model$obs_params$obs_cov
+    den_mean <- model$obs_params[[1]]
+    den_cov <- model$obs_params[[2]]
 
     X <- matrix(0, nrow = Time, ncol = d)
     data <- matrix(0, nrow = Time, ncol = d)
