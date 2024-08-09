@@ -5,7 +5,6 @@
 #' @param lag Length of time intervals
 #' @param Napf Number of particles used in the smoothing process
 #' @param N Number of particles used in the filtering process
-#' @param filter The filter method used. For linear Gaussian models, it is set to be Kalman filter
 #'
 #' @return A list contains
 #' X is the particles
