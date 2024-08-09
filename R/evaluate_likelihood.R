@@ -14,8 +14,8 @@
 evaluate_likelihood <- function(x, datum, obs_params, dist = 'lg') {
 
   if(dist == 'lg'){
-    obs_mean <- obs_params$obs_mean
-    obs_cov <- obs_params$obs_cov
+    obs_mean <- obs_params[[1]]
+    obs_cov <- obs_params[[2]]
     d <- length(x)
 
     dif <- as.vector(datum) - obs_mean %*% x
