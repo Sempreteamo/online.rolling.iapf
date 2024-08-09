@@ -3,9 +3,9 @@
 #'This function evaluates the log-likelihood of the observations for Gaussian linear obs_paramss.
 #'It is expected to be updated to evaluate log-density of general potential functions.
 #'
-#' @param obs_params List containing parameters information of observation density
 #' @param x State at which to evaluate
 #' @param datum Data point at which to evaluate
+#' @param obs_params List containing parameters information of observation density
 #' @param dist Distribution of the density function
 #'
 #' @return Log-density of the observation density
@@ -26,3 +26,4 @@ evaluate_likelihood <- function(x, datum, obs_params, dist = 'lg') {
 
   return(likelihood)
 }
+
