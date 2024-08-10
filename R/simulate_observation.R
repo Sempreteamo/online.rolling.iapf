@@ -3,10 +3,9 @@
 #' @param state State which to evaluate observations at
 #' @param params Parameters of the observation distribution
 #'
-#' @return
+#' @return Observations generated at the specific state
 #' @export
 #'
-#' @examples
 simulate_observation <- function(state, params){
   den_mean <- params[[1]]
   den_cov <- params[[2]]
