@@ -1,7 +1,7 @@
 #' Function of psi_APF
 #'
 #' This function performs sampling and resampling procedures of
-#' psi-Auxiliary Particle Filter with κ-adaptive resampling
+#' psi-Auxiliary Particle Filter with $\kappa$-adaptive resampling
 #'
 #' @param model List containing model parameters
 #' @param data List containing time series on which to run the filter
