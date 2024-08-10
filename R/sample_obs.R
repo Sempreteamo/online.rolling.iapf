@@ -5,16 +5,13 @@
 #' @param model List containing model parameters
 #' @param Time Total time length
 #' @param d The dimension of observations
-#' @param dist Distribution of the observation density
 #'
 #' @return A list containing the observation sequence
 #' @export
-sample_obs <- function(model, Time, d, dist = 'lg'){
-  if(dist == 'lg'){
+sample_obs <- function(model, Time, d){
+
     tran_mu <- model$tran_m
     tran_cov <- model$tran_c
-    den_mean <- model$obs_params[[1]]
-    den_cov <- model$obs_params[[2]]
 
     X <- matrix(0, nrow = Time, ncol = d)
     data <- matrix(0, nrow = Time, ncol = d)
@@ -26,11 +23,9 @@ sample_obs <- function(model, Time, d, dist = 'lg'){
     }
 
     for(t in 1:Time){
-      data[t,] <- rmvn(1, den_mean%*%X[t,], den_cov)
+      data[t,] <- model$simu_observation(state = X[t,], params = model$obs_params)
+
     }
-  }else{
-    print('provide the observation data directly')
-  }
 
   return(data)
 }
