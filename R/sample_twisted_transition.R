@@ -5,7 +5,7 @@
 #' @param x Initial states that one-step-ahead of the states we want to sample
 #' @param model List containing model parameters
 #' @param psi Parameters of the twisting function
-#' @param N
+#' @param N Number of particles to sample
 #'
 #' @return The sample values
 #' @export
