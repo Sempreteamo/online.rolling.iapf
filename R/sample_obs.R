@@ -3,9 +3,9 @@
 #'This function samples synthetic observations for each time step given the state space model.
 #'
 #' @param model List containing model parameters
-#' @param dist Distribution of the observation density
 #' @param Time Total time length
 #' @param d The dimension of observations
+#' @param dist Distribution of the observation density
 #'
 #' @return A list containing the observation sequence
 #' @export
