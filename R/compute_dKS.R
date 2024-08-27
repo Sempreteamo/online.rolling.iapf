@@ -11,7 +11,9 @@
 #' @export
 #'
 compute_dKS <- function(x, w, fks.obj){
-  d <-  ncol(as.matrix(x[1,,]))
+  output <- dim(x)
+  d <-  output[[3]]
+  Time <- output[[1]]
   dist <- vector()
   for(t in 1:Time){
     w_ <- normalise_weights_in_log_space(w[t,])[[1]]
@@ -31,4 +33,3 @@ compute_dKS <- function(x, w, fks.obj){
   return(dist)
 }
 #' @import stats
-
