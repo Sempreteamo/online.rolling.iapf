@@ -21,3 +21,4 @@ optimize_psi <- function(x, lfn){
 
   return(params)
 }
+#' @import stats
