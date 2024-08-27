@@ -22,7 +22,7 @@ sample_twisted_transition <- function(x, model, psi, N){
 
   cov <- output[[2]]
 
-  samples <- rmvn(N, mu, cov)
+  samples <- FKF::rmvn(N, mu, cov)
 
   return(samples)
 }
