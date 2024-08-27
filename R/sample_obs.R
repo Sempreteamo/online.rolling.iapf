@@ -16,10 +16,10 @@ sample_obs <- function(model, Time, d){
     X <- matrix(0, nrow = Time, ncol = d)
     data <- matrix(0, nrow = Time, ncol = d)
 
-    X[1,] <- rnorm(d)
+    X[1,] <- stats::rnorm(d)
 
     for(t in 2:Time){
-      X[t,] <- rmvn(1, tran_mu%*%X[t-1,], tran_cov)
+      X[t,] <- FKF::rmvn(1, tran_mu%*%X[t-1,], tran_cov)
     }
 
     for(t in 1:Time){
