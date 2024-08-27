@@ -57,7 +57,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
       s <- resample(w_previous, mode = 'multi')
       for(i in 1:N){
-        X[1,i,] <- FKF::rmvn(1, A%*%as.vector(X_previous[s[i],, drop = FALSE]), B)
+        X[1,i,] <- mvnfast::rmvn(1, A%*%as.vector(X_previous[s[i],, drop = FALSE]), B)
         w[1, i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
       }
 
@@ -75,7 +75,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
         for(i in 1:N){
 
-          X[t,i,] <- FKF::rmvn(1, A%*%X[t-1, ancestors[t,i],], B)
+          X[t,i,] <- mvnfast::rmvn(1, A%*%X[t-1, ancestors[t,i],], B)
           w[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
         }
 
@@ -84,7 +84,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       }else{
         ancestors[t,] <- ancestors[t-1,]
         for(i in 1:N){
-          X[t,i,] <- FKF::rmvn(1, A%*%X[t-1, i,], B)
+          X[t,i,] <- mvnfast::rmvn(1, A%*%X[t-1, i,], B)
           likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
         }
         w[t,] <- w[t-1,] + likelihoods[t,]
