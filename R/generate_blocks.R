@@ -48,3 +48,4 @@ generate_blocks <- function(lag, len){
 
   return(list(breaks, psi_index))
 }
+#' @import utils
