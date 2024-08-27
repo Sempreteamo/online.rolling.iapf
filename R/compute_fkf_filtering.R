@@ -18,8 +18,8 @@ compute_fkf_filtering <- function(params, obs){
   Zt <- params$Zt
   Ht <- params$Ht
   Gt <- params$Gt
-  fkf.obj <- fkf(a0, P0, dt, ct, Tt, Zt, Ht, Gt, yt = t(obs))
-  fks.obj <- fks(fkf.obj)
+  fkf.obj <- FKF::fkf(a0, P0, dt, ct, Tt, Zt, Ht, Gt, yt = t(obs))
+  fks.obj <- FKF::fks(fkf.obj)
 
   return(list(fkf.obj, fks.obj))
 }
