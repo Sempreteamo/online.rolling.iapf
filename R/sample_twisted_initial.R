@@ -18,7 +18,7 @@ sample_twisted_initial <- function(params, psi, N){
   cov <- output[[2]]
 
   #set.seed(1234)
-  samples <- rmvn(N, mu, cov)
+  samples <- FKF::rmvn(N, mu, cov)
 
   return(samples)
 }
