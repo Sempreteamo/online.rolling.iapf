@@ -8,7 +8,7 @@
 #' @param fks.obj Fks information of the linear Gaussian model
 #'
 #' @return A plot contains the distance of the whole time scale
-#' @export 
+#' @export
 #'
 compute_dKS <- function(x, w, fks.obj){
   d <-  ncol(as.matrix(x[1,,]))
@@ -24,10 +24,11 @@ compute_dKS <- function(x, w, fks.obj){
     fks_mean <- fks.obj$ahatt[,t]
     fks_cov <- fks.obj$Vt[,,t]
 
-    dist[t] <- mahalanobis(weighted_mean, fks_mean, fks_cov)  #squared d? Not divide?
+    dist[t] <- stats::mahalanobis(weighted_mean, fks_mean, fks_cov)  #squared d? Not divide?
   }
 
   plot(dist)
   return(dist)
 }
 #' @import stats
+
