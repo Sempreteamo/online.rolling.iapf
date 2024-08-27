@@ -19,7 +19,7 @@ sample_obs <- function(model, Time, d){
     X[1,] <- stats::rnorm(d)
 
     for(t in 2:Time){
-      X[t,] <- FKF::rmvn(1, tran_mu%*%X[t-1,], tran_cov)
+      X[t,] <- mvnfast::rmvn(1, tran_mu%*%X[t-1,], tran_cov)
     }
 
     for(t in 1:Time){
