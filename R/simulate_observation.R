@@ -9,7 +9,7 @@
 simulate_observation <- function(state, params){
   den_mean <- params[[1]]
   den_cov <- params[[2]]
-  obs <- rmvn(1, den_mean%*%state, den_cov)
+  obs <- FKF::rmvn(1, den_mean%*%state, den_cov)
   return(obs)
 }
 #' @import mvnfast
