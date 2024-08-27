@@ -30,3 +30,4 @@ compute_dKS <- function(x, w, fks.obj){
   plot(dist)
   return(dist)
 }
+#' @import stats
