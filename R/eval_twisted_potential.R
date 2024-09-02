@@ -30,14 +30,14 @@ eval_twisted_potential <- function(model, psi_pa, x, likelihoods){
   #if time t  is T, set the psi_pa of psi_tilde as NA
   #if t is T+1, set psi_pa of psi as NA
 
-  density <- -(d/2)*log(2*pi) - (1/2)* log_det_cov -
+  psi_t_0 <- -(d/2)*log(2*pi) - (1/2)* log_det_cov -
     (1 / 2) * t(dif) %*% inv_cov %*% dif
 
-  if(is.na(density)){
-    density <- 0
+  if(is.na(psi_t_0)){
+    psi_t_0 <- 0
   }
 
-  potential <- likelihoods + evaluate_psi_tilde(x, psi_t, model) + density -
+  potential <- likelihoods + evaluate_psi_tilde(x, psi_t, model) + psi_t_0 -
     evaluate_psi(x, psi)
 
 
