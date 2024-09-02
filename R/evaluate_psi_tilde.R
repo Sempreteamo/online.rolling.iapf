@@ -17,7 +17,7 @@ evaluate_psi_tilde <- function(x, psi_pa, model){
 
   dif <- as.vector(A%*%x - psi_pa[1:d])
 
-  full_covariance <- diag(psi_pa[(d + 1):(d + d), (d + 1):(d + d)]) + B
+  full_covariance <- diag(psi_pa[(d + 1):(d + d)], nrow=d, ncol=d) + B
 
   inv_cov <- solve(full_covariance)
 
