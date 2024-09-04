@@ -46,7 +46,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
     if(breaks[1] == 1){
       #the first block. break controls which block the algorithm is running
 
-      X[1, ,] <- stats::rnorm(N * d)
+      X[1, ,] <- stats::rnorm(N * d, ini_mu, ini_cov)
       for(i in 1:N){
         w[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
 
@@ -171,7 +171,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
     if(compute_ESS_log(w[t-1,]) <= kappa*N){
 
-      ancestors[t,] <- resample(w[t-1,])
+      ancestors[t,] <- resample(w[t-1,], mode = 'multi')
       logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
 
       for(i in 1:N){
