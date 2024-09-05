@@ -19,19 +19,13 @@ evaluate_psi_tilde <- function(x, psi_pa, model){
 
   full_covariance <- diag(psi_pa[(d + 1):(d + d)], nrow=d, ncol=d) + B
 
-  inv_cov <- solve(full_covariance)
+  psi_tilde <- tryCatch({
+    (-d / 2) * log(2 * pi) - (1 / 2) * log(det(full_covariance)) -
+      (1 / 2) * t(dif) %*% solve(full_covariance)%*% dif
+  }, error = function(e) {
 
-  log_det_cov <- log(det(full_covariance))
-
-
-  # Compute psi_tilde with full covariance matrix
-  psi_tilde <- (-d / 2) * log(2 * pi) - (1 / 2) * log_det_cov -
-    (1 / 2) * t(dif) %*% inv_cov %*% dif
-
-  #if t+1 = Time, we set psi_pa to be NA to make psi_tilde = 0
-  if(is.na(psi_tilde)){
-    psi_tilde <- 0
-  }
+    return(0)
+  })
 
   return(psi_tilde)
 }
