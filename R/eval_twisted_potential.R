@@ -13,7 +13,7 @@
 #'
 eval_twisted_potential <- function(model, psi_pa, x, likelihoods){
   ini_mu <- model$ini_mu
-  ini_cov <- matrix(model$ini_cov)
+  ini_cov <- as.matrix(model$ini_cov)
   d <- length(x)
   psi_d <- psi_pa[[1]]
   psi_t <- psi_pa[[2]]
