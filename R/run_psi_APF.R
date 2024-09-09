@@ -30,7 +30,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   w_previous <- data[[3]]
   X_previous <- as.matrix(data[[4]])
   Time <- nrow(obs)
-  d = ncol(obs)
+  d = ncol(A)
   kappa <- model$parameters$kappa
   ancestors <- matrix(NA, Time, N)
   resample_time <- vector()
@@ -46,10 +46,10 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
     if(breaks[1] == 1){
       #the first block. break controls which block the algorithm is running
 
-      X[1, ,] <- stats::rnorm(N * d, ini_mu, ini_cov)
+      X[1, ,] <- stats::rnorm(N * d, ini_mu, sqrt(ini_cov))
       for(i in 1:N){
         w[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
-
+print(w[1,i])
       }
 
 
@@ -82,7 +82,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
         likelihoods[t,] <- w[t,]
 
       }else{
-        ancestors[t,] <- ancestors[t-1,]
+        ancestors[t,] <- 1:N
         for(i in 1:N){
           X[t,i,] <- mvnfast::rmvn(1, A%*%X[t-1, i,], B)
           likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
@@ -106,6 +106,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
         likelihoods[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
         w[1,i] <- eval_twisted_potential(model, list(psi_pa[1,], psi_pa[2,], psi_pa[1,]), X[1,i,],  likelihoods[1,i])
       }
+
 
     }else{
 
@@ -151,7 +152,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
 
       }else{
-        ancestors[t,] <- ancestors[t-1,]
+        ancestors[t,] <- 1:N
         for(i in 1:N){
           #print(psi_pa[t+1,])
           X[t,i,] <- sample_twisted_transition(X[t-1, i,], model, psi_pa[t,], 1)
