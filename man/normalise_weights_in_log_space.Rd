@@ -4,10 +4,10 @@
 \alias{normalise_weights_in_log_space}
 \title{Function to calculate the normalised weights and the normalising constant}
 \usage{
-normalise_weights_in_log_space(logW_un)
+normalise_weights_in_log_space(W_un)
 }
 \arguments{
-\item{logW_un}{Log of the vector of unnormalised weights}
+\item{W_un}{Vector of unnormalised weights}
 }
 \value{
 A list with two elements:
@@ -15,7 +15,7 @@ logW is log of the vector of self-normalised weights
 logZ is log of the normalising constant, i.e. of the sum of the unnormalised weights
 }
 \description{
-This function takes a vector of unnormalised weights and normalises them in the usual numerically 
-stable way. It returns the normalised weights as well as the normalising constant. 
+This function takes a vector of unnormalised weights and normalises them in the usual numerically
+stable way. It returns the normalised weights as well as the normalising constant.
 The inputs and outputs are all in log-space.
 }

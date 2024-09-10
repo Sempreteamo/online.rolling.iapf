@@ -17,7 +17,7 @@ sample_obs <- function(model, Time, d){
     X <- matrix(0, nrow = Time, ncol = d)
     data <- matrix(0, nrow = Time, ncol = d)
 
-    X[1,] <- stats::rnorm(d, ini, ini_c)
+    X[1,] <- stats::rnorm(d, ini, sqrt(ini_c))
 
     for(t in 2:Time){
       X[t,] <- mvnfast::rmvn(1, tran_mu%*%X[t-1,], tran_cov)

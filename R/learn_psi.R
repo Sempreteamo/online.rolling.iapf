@@ -34,7 +34,6 @@ learn_psi <- function(x, obs, model, likelihoods){
     }else{
 
       for(i in 1:N){
-
         psi[t,i] <- exp(likelihoods[t,i] + evaluate_psi_tilde(x[t,i,], psi_pa[t+1, ], model))
 
       }

@@ -49,7 +49,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       X[1, ,] <- stats::rnorm(N * d, ini_mu, sqrt(ini_cov))
       for(i in 1:N){
         w[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
-print(w[1,i])
+#print(w[1,i])
       }
 
 
