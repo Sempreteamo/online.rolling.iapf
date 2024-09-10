@@ -6,7 +6,7 @@
 #' @return Observations generated at the specific state
 #' @export
 #'
-simulate_observation_lg <- function(state, params){
+simulate_observation <- function(state, params){
   den_mean <- params[[1]]
   den_cov <- params[[2]]
   obs <- mvnfast::rmvn(1, den_mean%*%state, den_cov)
