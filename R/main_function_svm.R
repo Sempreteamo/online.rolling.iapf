@@ -8,18 +8,19 @@
 #' Time = 10
 #' d_ = 1
 #'
-#' alpha = 0.42
-#' tran_m <- matrix(nrow = d_, ncol = d_)
-#' for (i in 1:d_){
-#'   for (j in 1:d_){
-#'       tran_m[i,j] = alpha^(abs(i-j) + 1)
-#'   }
-#' }
-#' ini <- rep(0, d_)
+#' alpha = 0.984
+#' beta = 0.69
+#' theta = 0.145
 #'
-#' ini_c = tran_c = obs_m = obs_c = diag(1, nrow = d_, ncol = d_)
+#' ini = obs_m = rep(0, d_)
+#' ini_c <- theta^2/(1 - alpha)^2
+#' tran_m = alpha
+#' tran_c = theta^2
+#'
 #' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
-#' obs_p <- list(obs_mean = obs_m, obs_cov = obs_c)
+#'
+#'
+#' obs_p <- list(obs_mean = obs_m, obs_cov = beta^2)
 #'
 #' output <- generate_blocks(lag, Time)
 #' breaks_ <- output[[1]]

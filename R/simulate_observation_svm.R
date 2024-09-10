@@ -1,4 +1,4 @@
-#' Function to simulate observations for linear gaussians
+#' Function to simulate observations for svm model
 #'
 #' @param state State which to evaluate observations at
 #' @param params Parameters of the observation distribution
@@ -7,9 +7,9 @@
 #' @export
 #'
 simulate_observation <- function(state, params){
-  den_mean <- params[[1]]
+
   den_cov <- params[[2]]
-  obs <- mvnfast::rmvn(1, den_mean%*%state, den_cov)
+  obs <- mvnfast::rmvn(1, 0, den_cov*exp(state))
   return(obs)
 }
 #' @import mvnfast

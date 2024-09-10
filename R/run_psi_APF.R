@@ -30,7 +30,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   w_previous <- data[[3]]
   X_previous <- as.matrix(data[[4]])
   Time <- nrow(obs)
-  d = ncol(A)
+  d = ncol(as.matrix(A))
   kappa <- model$parameters$kappa
   ancestors <- matrix(NA, Time, N)
   resample_time <- vector()
