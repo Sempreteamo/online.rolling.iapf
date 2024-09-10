@@ -35,6 +35,9 @@ eval_twisted_potential <- function(model, psi_pa, x, likelihoods){
     return(0)
   })
 
+  if(is.na(psi_t_0) == TRUE){
+    psi_t_0 <- 0
+  }
   potential <- likelihoods + evaluate_psi_tilde(x, psi_t, model) + psi_t_0 -
     evaluate_psi(x, psi)
 
