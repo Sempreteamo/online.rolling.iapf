@@ -17,27 +17,22 @@ run_iAPF <- function(model, data, Napf){
   breaks <- data$breaks
   psi_index <- data$psi_index
   obs <- data$obs
-  k <- model$k
+  k <- model$parameters$k
   Time <- nrow(obs)
   d = ncol(obs)
   psi_final <- list()
 
   for(index in 1:2){
     combined <- array(NA, dim = c(Napf, Time, d))
-    #cat('index=', index)
     psi_pa1 = NULL
-    #ancestors1 = NULL
-    #w_apf1 = NULL
 
     for(b in 2:length(breaks[[index]])){
-      #print(b)
       l = 1
       Z_apf <- vector()
       N[l] = Napf
       if(b == 2){
         output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
                    breaks[[index]][(b-1):b], 0, 0), N[l], psi_pa = 0, init = TRUE) #high d pass
-        #print('done b=2')
       }else{
         output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
                   breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]), N[l],
