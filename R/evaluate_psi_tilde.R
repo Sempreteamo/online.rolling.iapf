@@ -27,5 +27,8 @@ evaluate_psi_tilde <- function(x, psi_pa, model){
     return(0)
   })
 
+  if(is.na(psi_tilde) == TRUE){
+    psi_tilde <- 0
+  }
   return(psi_tilde)
 }
