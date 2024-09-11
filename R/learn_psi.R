@@ -23,13 +23,7 @@ learn_psi <- function(x, obs, model, likelihoods){
   for(t in Time:1){
 
     if(t == Time){
-      for(i in 1:N){
-        dif <- as.vector(x[t, i,] - obs[t, ,drop = FALSE])
-
-        psi[t,i] <- (1 / ((2 * pi)^(d / 2))) *
-          exp(-0.5 * t(dif) %*% dif)
-      }
-
+      psi[t,] <- likelihoods[t,]
 
     }else{
 
@@ -39,7 +33,7 @@ learn_psi <- function(x, obs, model, likelihoods){
       }
     }
 
-    psi_pa[t,] <- optimize_psi(x[t,,], log(psi[t,]))
+    psi_pa[t,] <- optimize_psi(x[t,,], psi[t,])
 
 
     #print(psi_pa[t, 1:d])

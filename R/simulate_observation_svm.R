@@ -9,7 +9,7 @@
 simulate_observation <- function(state, params){
 
   den_cov <- params[[2]]
-  obs <- mvnfast::rmvn(1, 0, den_cov*exp(state))
+  obs <- stats::rnorm(1, 0, sqrt(den_cov*exp(state)))
   return(obs)
 }
-#' @import mvnfast
+#' @import stats

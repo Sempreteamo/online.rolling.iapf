@@ -17,9 +17,7 @@ evaluate_likelihood <- function(x, datum, obs_params) {
   obs_cov <- obs_params[[2]]
   d <- length(x)
 
-  likelihood <- (-d / 2) * log(2 * pi) - (1 / 2) * log(prod(diag(obs_cov))) -
-    (1 / 2) * t(as.vector(datum)) * (obs_cov * exp(x))^(-1) * as.vector(datum)
-
+  likelihood <- dnorm(datum, mean = 0, sd = sqrt(obs_cov*exp(x)), log = TRUE)
 
   return(likelihood)
 }
