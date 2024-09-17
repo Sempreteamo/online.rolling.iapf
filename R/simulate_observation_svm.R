@@ -6,7 +6,7 @@
 #' @return Observations generated at the specific state
 #' @export
 #'
-simulate_observation <- function(state, params){
+simulate_observation_svm <- function(state, params){
 
   den_cov <- params[[2]]
   obs <- stats::rnorm(1, 0, sqrt(den_cov*exp(state)))

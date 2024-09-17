@@ -26,7 +26,7 @@
 #' psi_index_ <- output[[2]]
 #'
 #' model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c, obs_params = obs_p,
-#'  eval_likelihood = evaluate_likelihood, simu_observation = simulate_observation,
+#'  eval_likelihood = evaluate_likelihood_lg, simu_observation = simulate_observation,
 #'  parameters = parameters_, dist = 'lg')
 #'
 #' obs_ <- sample_obs(model, Time, d_) #provided by users

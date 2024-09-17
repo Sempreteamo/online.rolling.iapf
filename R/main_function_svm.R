@@ -5,15 +5,15 @@
 #' library(FKF)
 #' Napf = N = 200
 #' lag = 10
-#' Time = 10
+#' Time = 200
 #' d_ = 1
 #'
-#' alpha = 0.984
+#' alpha = 0.986
 #' beta = 0.69
-#' theta = 0.145
+#' theta = 0.13
 #'
 #' ini = obs_m = rep(0, d_)
-#' ini_c <- theta^2/(1 - alpha)^2
+#' ini_c <- theta^2/(1 - alpha^2)
 #' tran_m = alpha
 #' tran_c = theta^2
 #'
@@ -27,7 +27,7 @@
 #' psi_index_ <- output[[2]]
 #'
 #' model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c, obs_params = obs_p,
-#'  eval_likelihood = evaluate_likelihood, simu_observation = simulate_observation,
+#'  eval_likelihood = evaluate_likelihood_svm, simu_observation = simulate_observation_svm,
 #'  parameters = parameters_, dist = 'lg')
 #'
 #' obs_ <- sample_obs(model, Time, d_) #provided by users
@@ -48,19 +48,20 @@
 #' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users
 #'
 #'log_ratio <- vector()
+#'log_Z <- vector()
 #'
-#'for(i in 1:1){
+#'for(i in 1:10){
 #'set.seed(i*2)
 #' #run the algorithm
 #' output <- run_quasi_online_pf(model, data, lag, Napf, N)
 #' X<- output[[1]]
 #' w<- output[[2]]
-#' logZ <- output[[3]]
+#' logZ[i] <- output[[3]]
 #' avg <- output[[5]]
 #'
-#' log_ratio[i] <- compute_log_ratio(logZ, filtering)
-#'
-#' dist <- compute_dKS(X, w, smoothing)
+#' #log_ratio[i] <- compute_log_ratio(logZ, filtering)
+#' print(logZ[i])
+#' #dist <- compute_dKS(X, w, smoothing)
 #'
 #' plot(x = c(1:Time), y = avg[1,])
 #' }

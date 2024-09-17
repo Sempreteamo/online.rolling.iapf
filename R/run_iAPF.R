@@ -43,7 +43,7 @@ run_iAPF <- function(model, data, Napf){
       w_apf <- output[[2]]
       Z_apf[l] <- output[[3]]
       ancestors <- output[[4]]
-      likelihoods <- output[[6]]
+      log_likelihoods <- output[[6]]
 
       while(TRUE){
 
@@ -62,7 +62,7 @@ run_iAPF <- function(model, data, Napf){
           w_apf <- output[[2]]
           Z_apf[l] <- output[[3]]
           ancestors <- output[[4]]
-          likelihoods <- output[[6]]
+          log_likelihoods <- output[[6]]
 
         }
 
@@ -73,7 +73,7 @@ run_iAPF <- function(model, data, Napf){
           #cat('l=',l)
           #receive filtering particles X_apf for psi
           psi_pa <- learn_psi(X_apf, obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                              model, likelihoods)
+                              model, log_likelihoods)
 
           if(l > k & N[max(l-k,1)] == N[l] & is.unsorted(Z_apf[max(l-k,1):l])){
             N[l+1] <- 2*N[l]

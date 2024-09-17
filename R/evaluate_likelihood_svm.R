@@ -10,7 +10,7 @@
 #' @return Log-density of the observation density
 #' @export
 #'
-evaluate_likelihood <- function(x, datum, obs_params) {
+evaluate_likelihood_svm <- function(x, datum, obs_params) {
 
 
 

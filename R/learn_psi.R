@@ -1,46 +1,46 @@
-#' Function to learn twisting psi function parameters
+#' Function to learn twisting log_psi function parameters
 #'
-#'This function takes a collection of particle locations and calculates twisting psi function arguments.
+#'This function takes a collection of particle locations and calculates twisting log_psi function arguments.
 #'
 #' @param x A collection of particle locations
 #' @param obs Observations
 #' @param model List containing model parameters
-#' @param likelihoods Likelihoods of the particles generated during the iAPF
+#' @param log_likelihoods log_likelihoods of the particles generated during the iAPF
 #'
-#' @return Twisting psi function parameters
+#' @return Twisting log_psi function parameters
 #' @export
 #'
-learn_psi <- function(x, obs, model, likelihoods){
+learn_psi <- function(x, obs, model, log_likelihoods){
   output <- dim(x)
   Time <- output[1]
   N <- output[2]
   d <- output[3]
   obs <- as.matrix(obs)
-  psi <- matrix(NA, nrow = Time, ncol = N)
+  log_psi <- matrix(NA, nrow = Time, ncol = N)
   psi_pa <- matrix(NA, nrow = Time, ncol = 2*d)
 
-  #calculate psi
+  #calculate log_psi
   for(t in Time:1){
 
     if(t == Time){
-      psi[t,] <- likelihoods[t,]
+      log_psi[t,] <- log_likelihoods[t,]
 
     }else{
 
       for(i in 1:N){
-        psi[t,i] <- exp(likelihoods[t,i] + evaluate_psi_tilde(x[t,i,], psi_pa[t+1, ], model))
+        log_psi[t,i] <- log_likelihoods[t,i] + evaluate_psi_tilde(x[t,i,], psi_pa[t+1, ], model)
 
       }
     }
 
-    psi_pa[t,] <- optimize_psi(x[t,,], psi[t,])
+    psi_pa[t,] <- optimize_psi(x[t,,], log_psi[t,])
 
 
-    #print(psi_pa[t, 1:d])
+    #print(log_psi_pa[t, 1:d])
     #print(obs[t, drop = FALSE])
 
   }
-  #print(psi_pa)
+  #print(log_psi_pa)
   return(params = psi_pa)
 
 }

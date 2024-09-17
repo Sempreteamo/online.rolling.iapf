@@ -13,7 +13,7 @@
 compute_twisted_params <- function(params, psi){
   d <- length(psi)/2
   dist_mu <- params$mean
-  dist_cov <- matrix(params$cov)
+  dist_cov <- params$cov
   psi_mu <- psi[1:d]
   psi_cov <- psi[(d+1):(d+d)]
 

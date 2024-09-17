@@ -6,12 +6,12 @@
 #' @param model List containing model parameters
 #' @param psi_pa Parameters of psi function
 #' @param x States at which to evaluate
-#' @param likelihoods Likelihoods of the data point at which to evaluate
+#' @param log_likelihoods log_likelihoods of the data point at which to evaluate
 #'
 #' @return Twisted potential function evaluated at x
 #' @export
 #'
-eval_twisted_potential <- function(model, psi_pa, x, likelihoods){
+eval_twisted_potential <- function(model, psi_pa, x, log_likelihoods){
   ini_mu <- model$ini_mu
   ini_cov <- as.matrix(model$ini_cov)
   d <- length(x)
@@ -38,7 +38,7 @@ eval_twisted_potential <- function(model, psi_pa, x, likelihoods){
   if(is.na(psi_t_0) == TRUE){
     psi_t_0 <- 0
   }
-  potential <- likelihoods + evaluate_psi_tilde(x, psi_t, model) + psi_t_0 -
+  potential <- log_likelihoods + evaluate_psi_tilde(x, psi_t, model) + psi_t_0 -
     evaluate_psi(x, psi)
 
 
