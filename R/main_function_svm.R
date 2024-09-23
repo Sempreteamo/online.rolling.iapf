@@ -3,7 +3,7 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 200
+#' Napf = N = 100
 #' lag = 10
 #' Time = 200
 #' d_ = 1
@@ -30,8 +30,9 @@
 #'  eval_likelihood = evaluate_likelihood_svm, simu_observation = simulate_observation_svm,
 #'  parameters = parameters_, dist = 'lg')
 #'
-#' obs_ <- sample_obs(model, Time, d_) #provided by users
-#'
+#' #obs_ <- sample_obs(model, Time, d_) #provided by users
+#' obs_ <- 100*as.matrix(read.csv('data.csv')[1][1:944,])
+#' 
 #' dt_ <- ct_ <- matrix(0, d_, 1)
 #' Tt_ <- as.matrix(tran_m)
 #' P0_ <- Zt_ <- Ht_ <- Gt_ <- diag(1, d_, d_)

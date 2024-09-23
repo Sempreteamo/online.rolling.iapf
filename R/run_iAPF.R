@@ -26,7 +26,9 @@ run_iAPF <- function(model, data, Napf){
     combined <- array(NA, dim = c(Napf, Time, d))
     psi_pa1 = NULL
 
-    for(b in 2:length(breaks[[index]])){
+    for(b in 2:39){
+      #length(breaks[[index]])
+      print(b)
       l = 1
       Z_apf <- vector()
       N[l] = Napf
@@ -34,6 +36,7 @@ run_iAPF <- function(model, data, Napf){
         output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
                    breaks[[index]][(b-1):b], 0, 0), N[l], psi_pa = 0, init = TRUE) #high d pass
       }else{
+        
         output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
                   breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]), N[l],
                   psi_pa = 0, init = TRUE)
@@ -44,6 +47,7 @@ run_iAPF <- function(model, data, Napf){
       Z_apf[l] <- output[[3]]
       ancestors <- output[[4]]
       log_likelihoods <- output[[6]]
+    
 
       while(TRUE){
 

@@ -97,6 +97,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       }
       #print(t)
       #print(compute_ESS_log(w[t-1,]))
+      
     }
 
 
@@ -138,7 +139,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       }
 
     }
-
+    
     ancestors[1,] <- seq(1:N)
 
     for(t in 2:(Time-1)){
@@ -172,8 +173,9 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
           w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
         }
       }
-
+      
     }
+
 
     t = Time
     resample_time <- c(resample_time, t)
