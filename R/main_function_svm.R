@@ -4,8 +4,8 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 100
-#' lag = 10
-#' Time = 200
+#' lag = 118
+#' Time = 944
 #' d_ = 1
 #'
 #' alpha = 0.986
@@ -22,9 +22,6 @@
 #'
 #' obs_p <- list(obs_mean = obs_m, obs_cov = beta^2)
 #'
-#' output <- generate_blocks(lag, Time)
-#' breaks_ <- output[[1]]
-#' psi_index_ <- output[[2]]
 #'
 #' model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c, obs_params = obs_p,
 #'  eval_likelihood = evaluate_likelihood_svm, simu_observation = simulate_observation_svm,
@@ -32,7 +29,11 @@
 #'
 #' #obs_ <- sample_obs(model, Time, d_) #provided by users
 #' obs_ <- 100*as.matrix(read.csv('data.csv')[1][1:944,])
-#' 
+#'
+#' output <- generate_blocks(lag, length(obs_))
+#' breaks_ <- output[[1]]
+#' psi_index_ <- output[[2]]
+#'
 #' dt_ <- ct_ <- matrix(0, d_, 1)
 #' Tt_ <- as.matrix(tran_m)
 #' P0_ <- Zt_ <- Ht_ <- Gt_ <- diag(1, d_, d_)
@@ -49,7 +50,7 @@
 #' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users
 #'
 #'log_ratio <- vector()
-#'log_Z <- vector()
+#'logZ <- vector()
 #'
 #'for(i in 1:10){
 #'set.seed(i*2)

@@ -17,6 +17,10 @@ optimize_psi <- function(x, lfn){
   a <- coef[2:(1+d)]
   b <- coef[(2+d):length(coef)]
 
+  if (a == 0) {
+    a <- a +  1e-10
+  }
+
   params <- c(b/(-2*a), 1/(2*a))
 
   return(params)

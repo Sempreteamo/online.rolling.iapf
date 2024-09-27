@@ -24,6 +24,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   A <- model$tran_mu
   B <- model$tran_cov
   obs_params <- model$obs_params
+  re = 0
 
   obs <- as.matrix(data[[1]])
   breaks <- data[[2]]
@@ -69,6 +70,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
     for(t in 2:Time){
 
       if(compute_ESS_log(w[t-1,]) <= kappa*N){
+        re = re + 1
 
         ancestors[t,] <- resample(w[t-1,], mode = 'multi')
         logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
@@ -97,10 +99,9 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       }
       #print(t)
       #print(compute_ESS_log(w[t-1,]))
-      
     }
 
-
+    print(re)
     resample_time <- c(resample_time, Time)
 
 
@@ -139,13 +140,14 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       }
 
     }
-    
+
     ancestors[1,] <- seq(1:N)
 
     for(t in 2:(Time-1)){
       #print(Time)
       #cat('t=', t)
       if(compute_ESS_log(w[t-1,]) <= kappa*N){
+        re = re + 1
 
         ancestors[t,] <- resample(w[t-1,], mode = 'multi')
         logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
@@ -173,14 +175,14 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
           w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
         }
       }
-      
-    }
 
+    }
 
     t = Time
     resample_time <- c(resample_time, t)
 
     if(compute_ESS_log(w[t-1,]) <= kappa*N){
+      re = re + 1
 
       ancestors[t,] <- resample(w[t-1,], mode = 'multi')
       logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
@@ -201,6 +203,8 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
         w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, NA, psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
       }
     }
+
+    print(re)
 
     logZ <- logZ + normalise_weights_in_log_space(w[Time,])[[2]]
   }

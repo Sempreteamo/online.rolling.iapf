@@ -23,6 +23,7 @@ run_iAPF <- function(model, data, Napf){
   psi_final <- list()
 
   for(index in 1:2){
+    print(index)
     combined <- array(NA, dim = c(Napf, Time, d))
     psi_pa1 = NULL
 
@@ -32,14 +33,16 @@ run_iAPF <- function(model, data, Napf){
       l = 1
       Z_apf <- vector()
       N[l] = Napf
+
       if(b == 2){
         output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
                    breaks[[index]][(b-1):b], 0, 0), N[l], psi_pa = 0, init = TRUE) #high d pass
       }else{
-        
+
         output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
                   breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]), N[l],
                   psi_pa = 0, init = TRUE)
+print('pass')
       }
 
       X_apf <- output[[1]]
@@ -47,7 +50,6 @@ run_iAPF <- function(model, data, Napf){
       Z_apf[l] <- output[[3]]
       ancestors <- output[[4]]
       log_likelihoods <- output[[6]]
-    
 
       while(TRUE){
 
@@ -58,7 +60,7 @@ run_iAPF <- function(model, data, Napf){
           #generate filtering particles X_apf for psi the next iteration
           #APF outputs filtering X_apf for the next psi, and smoothing X_apf_s
           #for the final calculation
-
+print(psi_pa)
           output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
                                             breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]),
                                 N[l], psi_pa, init = FALSE)
