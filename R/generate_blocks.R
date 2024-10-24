@@ -17,7 +17,7 @@ generate_blocks <- function(lag, len){
   breaks <- list()
 
   breaks[[1]] <- seq(1, len, by = lag)
-  breaks[[2]] <- c(1, seq(lag/2 + 1, len, by = lag))
+  breaks[[2]] <- c(1, seq(floor(lag/2 + 1), len, by = lag))
 
   if (utils::tail( breaks[[1]], 1) != len) {
     breaks[[1]] <- c(breaks[[1]], len + 1)

@@ -3,10 +3,10 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 200
+#' Napf = N = 10000
 #' lag = 10
-#' Time = 10
-#' d_ = 1
+#' Time = 200
+#' d_ = 5
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -26,7 +26,7 @@
 #' psi_index_ <- output[[2]]
 #'
 #' model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c, obs_params = obs_p,
-#'  eval_likelihood = evaluate_likelihood_lg, simu_observation = simulate_observation,
+#'  eval_likelihood = evaluate_likelihood_lg, simu_observation = simulate_observation_lg,
 #'  parameters = parameters_, dist = 'lg')
 #'
 #' obs_ <- sample_obs(model, Time, d_) #provided by users
@@ -48,20 +48,21 @@
 #'
 #'log_ratio <- vector()
 #'
-#'for(i in 1:1){
+#'for(i in 1:10){
 #'set.seed(i*2)
 #' #run the algorithm
 #' output <- run_quasi_online_pf(model, data, lag, Napf, N)
+#' #output <- run_bpf(model, data, lag, Napf)
 #' X<- output[[1]]
 #' w<- output[[2]]
 #' logZ <- output[[3]]
-#' avg <- output[[5]]
+#' #avg <- output[[5]]
 #'
 #' log_ratio[i] <- compute_log_ratio(logZ, filtering)
+#' print(log_ratio[i] )
+#' #dist <- compute_dKS(X, w, smoothing)
 #'
-#' dist <- compute_dKS(X, w, smoothing)
-#'
-#' plot(x = c(1:Time), y = avg[1,])
+#' #plot(x = c(1:Time), y = avg[1,])
 #' }
 #' }
 

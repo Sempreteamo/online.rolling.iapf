@@ -17,7 +17,7 @@ optimize_psi <- function(x, lfn){
   a <- coef[2:(1+d)]
   b <- coef[(2+d):length(coef)]
 
-  if (a == 0) {
+  if (any(a == 0)) {
     a <- a +  1e-10
   }
 

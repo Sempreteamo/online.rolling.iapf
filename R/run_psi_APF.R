@@ -31,7 +31,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   w_previous <- data[[3]]
   X_previous <- as.matrix(data[[4]])
   Time <- nrow(obs)
-  d = ncol(as.matrix(A))
+  d = nrow(as.matrix(A))
   kappa <- model$parameters$kappa
   ancestors <- matrix(NA, Time, N)
   resample_time <- vector()
@@ -47,7 +47,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
     if(breaks[1] == 1){
       #the first block. break controls which block the algorithm is running
 
-      X[1, ,] <- stats::rnorm(N * d, ini_mu, sqrt(ini_cov))
+      X[1, ,] <- mvnfast::rmvn(N , ini_mu, ini_cov)
       for(i in 1:N){
         w[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
 #print(w[1,i])
@@ -58,7 +58,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
       s <- resample(w_previous, mode = 'multi')
       for(i in 1:N){
-        X[1,i,] <- mvnfast::rmvn(1, A%*%as.vector(X_previous[s[i],, drop = FALSE]), B)
+        X[1,i,] <- mvnfast::rmvn(1, ini_mu + A%*%(as.vector(X_previous[s[i],, drop = FALSE]) - ini_mu), B)
         w[1, i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
       }
 
@@ -79,7 +79,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
 
         for(i in 1:N){
-          X[t,i,] <- mvnfast::rmvn(1, A%*%X[t-1, ancestors[t,i],], B)
+          X[t,i,] <- mvnfast::rmvn(1, ini_mu + A%*%(X[t-1, ancestors[t,i],] - ini_mu), B)
             #mvnfast::rmvn(1, A%*%X[t-1, ancestors[t,i],], B)
           w[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
         }
@@ -91,7 +91,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
 
         for(i in 1:N){
-          X[t,i,] <-  mvnfast::rmvn(1, A%*%X[t-1, i,], B)
+          X[t,i,] <-  mvnfast::rmvn(1, ini_mu + A%*%(X[t-1, i,] - ini_mu), B)
             #mvnfast::rmvn(1, A%*%X[t-1, i,], B)
           log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
         }
@@ -101,7 +101,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       #print(compute_ESS_log(w[t-1,]))
     }
 
-    print(re)
+    #print(re)
     resample_time <- c(resample_time, Time)
 
 
@@ -110,7 +110,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   }else{
     if(breaks[1] == 1){
 
-      X[1,,] <- sample_twisted_initial(list(mean = ini_mu, cov = ini_cov), psi_pa[1,], N)
+      X[1,,] <- sample_twisted_initial(list(mean = ini_mu, cov = ini_cov[1,1]), psi_pa[1,], N)
 
       for(i in 1:N){
         log_likelihoods[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
@@ -124,10 +124,10 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
       for(i in 1:N){
         X_previous[i,] <- as.vector(X_previous[i,, drop = FALSE])
-        w_adj[i] <- w_previous[i]*exp(1/2*(t(A%*%X_previous[i,]) + t(psi_pa[1,1:d])%*%
+        w_adj[i] <- w_previous[i]*exp(1/2*(t(ini_mu + A%*%(X_previous[i,]) - ini_mu) + t(psi_pa[1,1:d])%*%
                                              diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d))%*%diag((psi_pa[1, (d+1):(d+d)]^(-2) + 1)^(-1), nrow=d,ncol=d)%*%
-                                        (A%*%X_previous[i, ] + diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]) -
-                                        1/2*(t(A%*%X_previous[i, ])%*%A%*%X_previous[i,] +
+                                        (ini_mu + A%*%(X_previous[i, ] - ini_mu) + diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]) -
+                                        1/2*(t(ini_mu + A%*%(X_previous[i, ]- ini_mu))%*%(ini_mu + A%*%X_previous[i,] - ini_mu) +
                                                t(psi_pa[1,1:d])%*%diag(psi_pa[1, (d+1):(d+d)]^(-2), nrow=d,ncol=d)%*%psi_pa[1,1:d]))
       }
 

@@ -3,34 +3,33 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 100
-#' lag = 59
-#' Time = 944
-#' d_ = 1
+#' Napf = N = 200
+#' lag = 10
+#' Time = 200
+#' d_ = 2
 #'
-#' alpha = 0.986
-#' beta = 0.69
-#' theta = 0.13
 #'
-#' ini = obs_m = rep(0, d_)
-#' ini_c <- theta^2/(1 - alpha^2)
-#' tran_m = alpha
-#' tran_c = theta^2
+#' ini <- rep(0.1, d_)
+#' ini_c = obs_c = diag(0.2,d_)
+#' tran_m = diag(0.95, d_)
+#' tran_c = diag(0.2, d_)
+#' obs_c <- diag(1, d_)
+#'
 #'
 #' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
 #'
 #'
-#' obs_p <- list(obs_mean = obs_m, obs_cov = beta^2)
+#' obs_p <- list(obs_mean = rep(0, d_), obs_cov = obs_c)
 #'
 #'
 #' model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c, obs_params = obs_p,
-#'  eval_likelihood = evaluate_likelihood_svm, simu_observation = simulate_observation_svm,
+#'  eval_likelihood = evaluate_likelihood_msvm, simu_observation = simulate_observation_msvm,
 #'  parameters = parameters_, dist = 'lg')
 #'
-#' #obs_ <- sample_obs(model, Time, d_) #provided by users
-#' obs_ <- 100*as.matrix(read.csv('data.csv')[1][1:944,])
+#' obs_ <- sample_obs(model, Time, d_) #provided by users
+#' #obs_ <- 100*as.matrix(read.csv('data.csv')[1][1:944,])
 #'
-#' output <- generate_blocks(lag, length(obs_))
+#' output <- generate_blocks(lag, nrow(obs_))  #might not consistent with 1d
 #' breaks_ <- output[[1]]
 #' psi_index_ <- output[[2]]
 #'
@@ -52,20 +51,21 @@
 #'log_ratio <- vector()
 #'logZ <- vector()
 #'
-#'for(i in 1:10){
-#'set.seed(i^2)
+#'for(i in 1:7){
+#'set.seed(i*2)
 #' #run the algorithm
 #' output <- run_quasi_online_pf(model, data, lag, Napf, N)
+#' #output <- run_bpf(model, data, lag, Napf)
 #' X<- output[[1]]
 #' w<- output[[2]]
 #' logZ[i] <- output[[3]]
-#' avg <- output[[5]]
+#' #avg <- output[[5]]
 #'
 #' #log_ratio[i] <- compute_log_ratio(logZ, filtering)
 #' print(logZ[i])
 #' #dist <- compute_dKS(X, w, smoothing)
 #'
-#' plot(x = c(1:Time), y = avg[1,])
+#' #plot(x = c(1:Time), y = avg[1,])
 #' }
 #' }
 
