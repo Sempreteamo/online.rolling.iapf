@@ -4,9 +4,9 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 10
+#' lag = 25
 #' Time = 50
-#' d_ = 1
+#' d_ = 5
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -65,11 +65,13 @@
 #' #plot(x = c(1:Time), y = avg[1,])
 #' }
 #' 
-#' specific_time = 33
+#' specific_time = 37
 #' 
 #' output_t <- perform_online_setting(specific_time, w, X, Napf, psi)
 #' logZ_t <- output_t[[3]]
 #' psi <- output_t[[4]]
+#' X <- output_t[[1]]
+#' w <- output_t[[2]]
 #' 
 #' filter_t <- compute_fkf_filtering(params, obs_[1:specific_time,])
 #' filtering_t <- filter_t[[1]]

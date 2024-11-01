@@ -61,6 +61,8 @@ perform_online_setting <- function(specific_time, w_record, X_record, Napf, psi_
   }
  
   psi_pa_final <- rbind(psi_final[1:(nearest_start_time-1),],  psi_pa, psi_final[(specific_time + 1):Time,])
+  X_record[nearest_start_time:t,,] <- X_apf
+  w_record[nearest_start_time:t,] <- w_apf
   
   output1 <- run_psi_APF(model, list(obs[1:t,], 
                                      breaks[[1]][1], 0, 0), Napf, psi_pa_final, init = FALSE)
@@ -68,7 +70,7 @@ perform_online_setting <- function(specific_time, w_record, X_record, Napf, psi_
   w <- output1[[2]]
   logZ <- output1[[3]]
   
-  return(list(X = X, w = w, logZ = logZ, psi_final = psi_pa_final))
+  return(list(X = X_record, w = w_record, logZ = logZ, psi_final = psi_pa_final))
   
 }
 
