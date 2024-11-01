@@ -3,6 +3,7 @@ perform_online_setting <- function(specific_time, w_record, X_record, Napf, psi_
   breaks_ <- data$breaks
   obs <- data$obs
   t = specific_time
+  Time <- nrow(obs)
   nearest_start_time <-  max(unlist(breaks_)[unlist(breaks_) <= t])
 
   #find the nearest start time
@@ -59,7 +60,7 @@ perform_online_setting <- function(specific_time, w_record, X_record, Napf, psi_
     }else break
   }
  
-  psi_pa_final <- rbind(psi_final[1:(nearest_start_time-1),],  psi_pa)
+  psi_pa_final <- rbind(psi_final[1:(nearest_start_time-1),],  psi_pa, psi_final[(specific_time + 1):Time,])
   
   output1 <- run_psi_APF(model, list(obs[1:t,], 
                                      breaks[[1]][1], 0, 0), Napf, psi_pa_final, init = FALSE)

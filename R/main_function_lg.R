@@ -7,7 +7,6 @@
 #' lag = 10
 #' Time = 50
 #' d_ = 1
-#' specific_time = 32
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -53,7 +52,6 @@
 #'set.seed(i*2)
 #' #run the algorithm
 #' output <- run_quasi_online_pf(model, data, lag, Napf, N)
-#' #output <- run_bpf(model, data, lag, Napf)
 #' X<- output[[1]]
 #' w<- output[[2]]
 #' logZ <- output[[3]]
@@ -67,8 +65,11 @@
 #' #plot(x = c(1:Time), y = avg[1,])
 #' }
 #' 
+#' specific_time = 33
+#' 
 #' output_t <- perform_online_setting(specific_time, w, X, Napf, psi)
 #' logZ_t <- output_t[[3]]
+#' psi <- output_t[[4]]
 #' 
 #' filter_t <- compute_fkf_filtering(params, obs_[1:specific_time,])
 #' filtering_t <- filter_t[[1]]
