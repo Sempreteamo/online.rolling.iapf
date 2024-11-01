@@ -4,9 +4,10 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 100
-#' Time = 200
-#' d_ = 5
+#' lag = 10
+#' Time = 50
+#' d_ = 1
+#' specific_time = 32
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -56,13 +57,21 @@
 #' X<- output[[1]]
 #' w<- output[[2]]
 #' logZ <- output[[3]]
+#' psi <- output[[4]]
 #' #avg <- output[[5]]
 #'
 #' log_ratio[i] <- compute_log_ratio(logZ, filtering)
 #' print(log_ratio[i] )
 #' #dist <- compute_dKS(X, w, smoothing)
 #'
-#' plot(x = c(1:Time), y = avg[1,])
+#' #plot(x = c(1:Time), y = avg[1,])
 #' }
+#' 
+#' output_t <- perform_online_setting(specific_time, w, X, Napf, psi)
+#' logZ_t <- output_t[[3]]
+#' 
+#' filter_t <- compute_fkf_filtering(params, obs_[1:specific_time,])
+#' filtering_t <- filter_t[[1]]
+#' log_ratio <- compute_log_ratio(logZ_t, filtering_t)
 #' }
 

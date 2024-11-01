@@ -55,7 +55,7 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
   }
   #logZ <- logZ + normalise_weights_in_log_space(w[Time,])[[2]]
 
-  return(list(X = X, w = w, logZ = logZ, Xs = Xs, avg = avg))
+  return(list(X = X_record, w = w_record, logZ = logZ, psi_final = psi_final1))
 }
 
 
