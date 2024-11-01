@@ -21,7 +21,7 @@ compute_twisted_params <- function(params, psi){
 
   mu <- zc*(dist_cov^(-1)*dist_mu + psi_cov^(-1)*psi_mu)
 
-  cov <- diag(zc)
+  cov <- diag(zc, d, d)
 
   return(params = list(mu, cov))
 }

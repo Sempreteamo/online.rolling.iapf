@@ -3,8 +3,8 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 100
-#' lag = 59
+#' Napf = N = 200
+#' lag = 32
 #' Time = 944
 #' d_ = 1
 #'
@@ -56,16 +56,17 @@
 #'set.seed(i^2)
 #' #run the algorithm
 #' output <- run_quasi_online_pf(model, data, lag, Napf, N)
+#' #output <- run_bpf(model, data, lag, Napf)
 #' X<- output[[1]]
 #' w<- output[[2]]
 #' logZ[i] <- output[[3]]
-#' avg <- output[[5]]
+#' #avg <- output[[5]]
 #'
 #' #log_ratio[i] <- compute_log_ratio(logZ, filtering)
 #' print(logZ[i])
 #' #dist <- compute_dKS(X, w, smoothing)
 #'
-#' plot(x = c(1:Time), y = avg[1,])
+#' #plot(x = c(1:Time), y = avg[1,])
 #' }
 #' }
 

@@ -15,7 +15,7 @@ sample_twisted_transition <- function(x, model, psi, N){
   B <- model$tran_cov
   ini <- model$ini_mu
 
-  params <- list(mean = ini + A%*%(x - ini), cov = B[1,1])
+  params <- list(mean = ini + A%*%(x - ini), cov = as.matrix(B)[1,1])
 
   output <- compute_twisted_params(params, psi)
 

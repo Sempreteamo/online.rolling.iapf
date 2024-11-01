@@ -3,8 +3,8 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 10000
-#' lag = 10
+#' Napf = N = 200
+#' lag = 100
 #' Time = 200
 #' d_ = 5
 #'
@@ -48,7 +48,7 @@
 #'
 #'log_ratio <- vector()
 #'
-#'for(i in 1:10){
+#'for(i in 1:1){
 #'set.seed(i*2)
 #' #run the algorithm
 #' output <- run_quasi_online_pf(model, data, lag, Napf, N)
@@ -62,7 +62,7 @@
 #' print(log_ratio[i] )
 #' #dist <- compute_dKS(X, w, smoothing)
 #'
-#' #plot(x = c(1:Time), y = avg[1,])
+#' plot(x = c(1:Time), y = avg[1,])
 #' }
 #' }
 

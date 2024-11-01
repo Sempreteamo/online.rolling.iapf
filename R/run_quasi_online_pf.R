@@ -24,15 +24,15 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
   d = ncol(obs)
   Xs <- array(NA, dim = c(nrow(obs), N, d))
   output <- run_iAPF(model, data, Napf)
-  #X <- output[[1]]
-  #w <- output[[2]]
+  X_record <- output[[1]]
+  w_record <- output[[2]]
   psi_pa <- output[[3]]
   #logZ <- output[[4]]
   #ancestors <- output[[5]]
 
-  psi_final <- combine_psi(psi_pa, index)
+  psi_final1 <- combine_psi(psi_pa, index)
 
-  output1 <- run_psi_APF(model, list(obs, breaks[[1]][1], 0, 0), Napf, psi_final, init = FALSE)
+  output1 <- run_psi_APF(model, list(obs, breaks[[1]][1], 0, 0), Napf, psi_final1, init = FALSE)
   X <- output1[[1]]
   w <- output1[[2]]
   logZ <- output1[[3]]

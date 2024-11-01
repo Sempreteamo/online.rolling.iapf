@@ -6,7 +6,7 @@ run_bpf <- function(model, data, lag, Napf){
   X <- array(NA, dim = c(Time, Napf, d))
   w <- matrix(NA, Time, Napf)
   logZ <- 0
-  
+  ancestors <- matrix(NA, Time, N)
   ini <- model$ini_mu
   ini_c <- model$ini_cov
   tran_mu <- rep(as.matrix(model$tran_mu)[1,1], d)
@@ -21,7 +21,7 @@ run_bpf <- function(model, data, lag, Napf){
   logZ <- logZ + normalise_weights_in_log_space(w[1,])[[2]]
   mix <- resample(w[1,], mode = 'multi')
   X[1,,] <- X[1,mix,]
-  
+  ancestors[1,] <- seq(1:N)
   for (t in 2:Time) {
     
     for(i in 1:Napf){
@@ -34,7 +34,7 @@ run_bpf <- function(model, data, lag, Napf){
     logZ <- logZ + normalise_weights_in_log_space(w[t,])[[2]]
     mix <- resample(w[t,], mode = 'multi')
     X[t,,] <- X[t,mix,]
-    
+    ancestors[t,] <- mix
     #V[t,] <- V[t-1,]
     #V[t, -unique(I[t-1,mix])] <- t
     

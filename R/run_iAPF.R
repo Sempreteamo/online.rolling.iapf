@@ -24,12 +24,13 @@ run_iAPF <- function(model, data, Napf){
 
   for(index in 1:2){
     #print(index)
-    combined <- array(NA, dim = c(Napf, Time, d))
+    X_apf_record <- array(NA, dim = c(Time, Napf, d))
+    w_apf_record <- matrix(NA, Time, Napf)
     psi_pa1 = NULL
 
     for(b in 2:length(breaks[[index]])){
       #length(breaks[[index]])
-      print(b)
+      #print(b)
       l = 1
       Z_apf <- vector()
       N[l] = Napf
@@ -92,6 +93,9 @@ run_iAPF <- function(model, data, Napf){
           #print('finish l')
         }else break
       }
+      
+      X_apf_record[breaks[[index]][(b-1)]:(breaks[[index]][b]-1) , ,] <- X_apf 
+      w_apf_record[breaks[[index]][(b-1)]:(breaks[[index]][b]-1) ,] <- w_apf 
 
       psi_pa1 <- rbind(psi_pa1, psi_pa)
       #ancestors1 <- rbind(ancestors1, ancestors)
@@ -103,5 +107,5 @@ run_iAPF <- function(model, data, Napf){
     psi_final[[index]] <- psi_pa1
   }
   #output psi
-  return(list(X_apf, w_apf, psi_final, Z_apf = Z_apf[l], ancestors))
+  return(list(X_apf_record, w_apf_record, psi_final, Z_apf = Z_apf[l], ancestors))
 }

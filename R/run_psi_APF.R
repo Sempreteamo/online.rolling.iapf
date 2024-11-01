@@ -110,7 +110,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   }else{
     if(breaks[1] == 1){
 
-      X[1,,] <- sample_twisted_initial(list(mean = ini_mu, cov = ini_cov[1,1]), psi_pa[1,], N)
+      X[1,,] <- sample_twisted_initial(list(mean = ini_mu, cov = as.matrix(ini_cov)[1,1]), psi_pa[1,], N)
 
       for(i in 1:N){
         log_likelihoods[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
@@ -143,40 +143,43 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
 
     ancestors[1,] <- seq(1:N)
 
-    for(t in 2:(Time-1)){
+    if(Time > 2){ 
+      for(t in 2:(Time - 1)){
       #print(Time)
       #cat('t=', t)
       if(compute_ESS_log(w[t-1,]) <= kappa*N){
         re = re + 1
-
+        
         ancestors[t,] <- resample(w[t-1,], mode = 'multi')
         logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
         resample_time <- c(resample_time, t-1)
-
+        
         for(i in 1:N){
           #print(psi_pa[t+1,])
           X[t,i,] <- sample_twisted_transition(X[t-1, ancestors[t,i],], model, psi_pa[t,], 1)
           log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
           w[t,i] <- eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
-
+          
         }
-
-
+        
+        
       }else{
         ancestors[t,] <- 1:N
         for(i in 1:N){
           #print(psi_pa[t+1,])
           X[t,i,] <- sample_twisted_transition(X[t-1, i,], model, psi_pa[t,], 1)
-#print(obs_params$obs_mean)
-#print(matrix(X[t,i,], 1))
-#print(obs_params$obs_mean%*%matrix(X[t,i,], 1))
+          #print(obs_params$obs_mean)
+          #print(matrix(X[t,i,], 1))
+          #print(obs_params$obs_mean%*%matrix(X[t,i,], 1))
           log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
-
+          
           w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
         }
       }
-
+      
+      }
     }
+  
 
     t = Time
     resample_time <- c(resample_time, t)
