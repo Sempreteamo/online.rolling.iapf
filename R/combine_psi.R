@@ -13,7 +13,7 @@
 #'
 combine_psi <- function(psi, index){
   dims <- dim(psi[[1]])
-  Time <- dims[1]
+  Time <- length(index)
   d <- dims[2]
   
   combined_psi <- matrix(NA, Time, d)

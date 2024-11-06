@@ -207,7 +207,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
       }
     }
 
-    print(re)
+    #print(re)
 
     logZ <- logZ + normalise_weights_in_log_space(w[Time,])[[2]]
   }

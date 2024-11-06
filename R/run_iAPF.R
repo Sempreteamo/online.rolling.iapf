@@ -13,24 +13,38 @@
 #'
 #' @export
 #'
-run_iAPF <- function(model, data, Napf){
+run_iAPF <- function(model, data, Napf, X_apf_record = NULL, w_apf_record = NULL){
   breaks <- data$breaks
   psi_index <- data$psi_index
   obs <- data$obs
+  run_block <- data$run_block
+  
   k <- model$parameters$k
   Time <- nrow(obs)
   d = ncol(obs)
   psi_final <- list()
+  
+  if (is.null(X_apf_record)){
+    X_apf_record <- array(NA, dim = c(Time, Napf, d))
+  }else{
+    X_apf_record1 <- array(NA, dim = c(Time, Napf, d))
+    X_apf_record1[1:dim(X_apf_record)[1],,] <- X_apf_record
+    X_apf_record <- X_apf_record1
+  }
+  
+  if (is.null(w_apf_record)){
+    w_apf_record <- matrix(NA, Time, Napf)
+  }else{
+    w_apf_record <- rbind(w_apf_record, matrix(NA, Time - nrow(w_apf_record), Napf))
+  }
+  
+  psi_pa1 = NULL
+  
 
   for(index in 1:2){
-    #print(index)
-    X_apf_record <- array(NA, dim = c(Time, Napf, d))
-    w_apf_record <- matrix(NA, Time, Napf)
-    psi_pa1 = NULL
-
-    for(b in 2:length(breaks[[index]])){
-      #length(breaks[[index]])
-      #print(b)
+    
+    for(b in run_block[(index*2 - 1)]:run_block[(index*2)]){
+      
       l = 1
       Z_apf <- vector()
       N[l] = Napf
@@ -41,9 +55,10 @@ run_iAPF <- function(model, data, Napf){
       }else{
 
         output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                  breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]), N[l],
+                  breaks[[index]][(b-1):b], 
+                  w_apf_record[breaks[[index]][(b-1)] - 1,], 
+                  X_apf_record[breaks[[index]][(b-1)] - 1,,]), N[l],
                   psi_pa = 0, init = TRUE)
-#print('pass')
       }
 
       X_apf <- output[[1]]
@@ -57,11 +72,10 @@ run_iAPF <- function(model, data, Napf){
         output <- list()
 
         if(l != 1){
-          #print(l)
           #generate filtering particles X_apf for psi the next iteration
           #APF outputs filtering X_apf for the next psi, and smoothing X_apf_s
           #for the final calculation
-#print(psi_pa)
+
           output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
                                             breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]),
                                 N[l], psi_pa, init = FALSE)
@@ -94,10 +108,12 @@ run_iAPF <- function(model, data, Napf){
         }else break
       }
       
+      
       X_apf_record[breaks[[index]][(b-1)]:(breaks[[index]][b]-1) , ,] <- X_apf 
       w_apf_record[breaks[[index]][(b-1)]:(breaks[[index]][b]-1) ,] <- w_apf 
 
       psi_pa1 <- rbind(psi_pa1, psi_pa)
+
       #ancestors1 <- rbind(ancestors1, ancestors)
       #w_apf1 <- rbind(w_apf1, w_apf)
       #combined[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),,] <- X_apf

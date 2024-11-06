@@ -4,9 +4,9 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 25
-#' Time = 50
-#' d_ = 5
+#' lag = 10
+#' Time = 56
+#' d_ = 1
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -24,6 +24,7 @@
 #' output <- generate_blocks(lag, Time)
 #' breaks_ <- output[[1]]
 #' psi_index_ <- output[[2]]
+#' run_block_ <- c(2, length(breaks_[[1]]), 2, length(breaks_[[2]]))
 #'
 #' model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c, obs_params = obs_p,
 #'  eval_likelihood = evaluate_likelihood_lg, simu_observation = simulate_observation_lg,
@@ -42,7 +43,8 @@
 #' filtering <- filter[[1]]
 #' smoothing <- filter[[2]]
 #'
-#' data <- list(obs = obs_, breaks = breaks_, psi_index = psi_index_)
+#' data <- list(obs = obs_, breaks = breaks_, 
+#' psi_index = psi_index_, run_block = run_block_)
 #'
 #' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users
 #'
@@ -65,9 +67,29 @@
 #' #plot(x = c(1:Time), y = avg[1,])
 #' }
 #' 
-#' specific_time = 37
+#' specific_time = 112
 #' 
-#' output_t <- perform_online_setting(specific_time, w, X, Napf, psi)
+#' #update observations:
+#' 
+#' if(nrow(obs_) < specific_time){
+#' obs_ <- rbind(obs_, sample_obs(model, specific_time - nrow(obs_), d_)) 
+#' output <- generate_blocks(lag, specific_time)
+#' breaks_ <- output[[1]]
+#' psi_index_ <- output[[2]]
+#' 
+#' nearest_start_time1 <-  max(breaks_[[1]][breaks_[[1]] <= nrow(w)])
+#' nearest_start_time2 <-  max(breaks_[[2]][breaks_[[2]] <= nrow(w)])
+#' max = max(nearest_start_time1, nearest_start_time2)
+#' b = which(breaks_[[1]] == nearest_start_time1)
+#' b2 = which(breaks_[[2]] == nearest_start_time2)
+#' run_block_ <- c(b + 1, length(breaks_[[1]]), b2 + 1, length(breaks_[[2]]) )
+#' 
+#' data <- list(obs = obs_, breaks = breaks_, 
+#' psi_index = psi_index_, run_block = run_block_)
+#' }
+#' 
+#' 
+#' output_t <- perform_online_setting(data, specific_time, w, X, Napf, psi)
 #' logZ_t <- output_t[[3]]
 #' psi <- output_t[[4]]
 #' X <- output_t[[1]]
