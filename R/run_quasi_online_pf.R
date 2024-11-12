@@ -18,18 +18,35 @@
 #'
 run_quasi_online_pf <- function(model, data, lag, Napf, N){
   breaks <- data$breaks
-  index <- data$psi_index
+  psi_index <- data$psi_index
   obs <- data$obs
+  run_block <- data$run_block
   Time <- nrow(obs)
-  d = ncol(obs)
   Xs <- array(NA, dim = c(nrow(obs), N, d))
-  output <- run_iAPF(model, data, Napf)
-  X_record <- output[[1]]
-  w_record <- output[[2]]
-  psi_pa <- output[[3]]
-  #logZ <- output[[4]]
-  #ancestors <- output[[5]]
-
+  d = ncol(obs)
+  
+  X_apf <- NULL
+  w_apf <- NULL
+  
+  
+  #step 1: run iAPF whenever the end of a block is reached
+  for(index in 1:length(breaks)){
+    psi_pa1 <- NULL
+    
+    for( b in  2:length(breaks[[index]])){
+      data$run_block <- c(index, b)  #which layer, which block
+      data$past <- list(X_apf[dim(X_apf)[1],,], w_apf[nrow(w_apf),])
+      
+      output <- run_iAPF(model, data, Napf)
+      X_apf <- output[[1]]
+      w_apf <- output[[2]]
+      psi_pa <- output[[3]]
+      
+      psi_pa1 <- rbind(psi_pa1, psi_pa)
+    }
+    psi_final[[index]] <- psi_pa1
+  }
+  
   psi_final1 <- combine_psi(psi_pa, index)
 
   output1 <- run_psi_APF(model, list(obs, breaks[[1]][1], 0, 0), Napf, psi_final1, init = FALSE)

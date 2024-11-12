@@ -13,115 +13,97 @@
 #'
 #' @export
 #'
-run_iAPF <- function(model, data, Napf, X_apf_record = NULL, w_apf_record = NULL){
+run_iAPF <- function(model, data, Napf){
   breaks <- data$breaks
   psi_index <- data$psi_index
   obs <- data$obs
   run_block <- data$run_block
+  past <- data$past
+  
+  w_apf_record <- past[[2]]
+  X_apf_record <- past[[1]]
+  
+  index <- run_block[1]
+  b <- run_block[2]
   
   k <- model$parameters$k
   Time <- nrow(obs)
   d = ncol(obs)
-  psi_final <- list()
   
-  if (is.null(X_apf_record)){
-    X_apf_record <- array(NA, dim = c(Time, Napf, d))
+  l = 1
+  Z_apf <- vector()
+  N[l] = Napf
+  
+  if(b == 2){
+    output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
+                                      breaks[[index]][(b-1):b], 0, 0), N[l], psi_pa = 0, init = TRUE) #high d pass
   }else{
-    X_apf_record1 <- array(NA, dim = c(Time, Napf, d))
-    X_apf_record1[1:dim(X_apf_record)[1],,] <- X_apf_record
-    X_apf_record <- X_apf_record1
-  }
-  
-  if (is.null(w_apf_record)){
-    w_apf_record <- matrix(NA, Time, Napf)
-  }else{
-    w_apf_record <- rbind(w_apf_record, matrix(NA, Time - nrow(w_apf_record), Napf))
-  }
-  
-  psi_pa1 = NULL
-  
-
-  for(index in 1:2){
     
-    for(b in run_block[(index*2 - 1)]:run_block[(index*2)]){
+    output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
+                                      breaks[[index]][(b-1):b], 
+                                      w_apf_record, 
+                                      X_apf_record), N[l],
+                          psi_pa = 0, init = TRUE)
+  }
+  
+  X_apf <- output[[1]]
+  w_apf <- output[[2]]
+  Z_apf[l] <- output[[3]]
+  ancestors <- output[[4]]
+  log_likelihoods <- output[[6]]
+  
+  while(TRUE){
+    
+    output <- list()
+    
+    if(l != 1){
+      #generate filtering particles X_apf for psi the next iteration
+      #APF outputs filtering X_apf for the next psi, and smoothing X_apf_s
+      #for the final calculation
       
-      l = 1
-      Z_apf <- vector()
-      N[l] = Napf
-
-      if(b == 2){
-        output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                   breaks[[index]][(b-1):b], 0, 0), N[l], psi_pa = 0, init = TRUE) #high d pass
-      }else{
-
-        output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                  breaks[[index]][(b-1):b], 
-                  w_apf_record[breaks[[index]][(b-1)] - 1,], 
-                  X_apf_record[breaks[[index]][(b-1)] - 1,,]), N[l],
-                  psi_pa = 0, init = TRUE)
-      }
-
+      output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
+                                        breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]),
+                            N[l], psi_pa, init = FALSE)
       X_apf <- output[[1]]
       w_apf <- output[[2]]
       Z_apf[l] <- output[[3]]
       ancestors <- output[[4]]
       log_likelihoods <- output[[6]]
-
-      while(TRUE){
-
-        output <- list()
-
-        if(l != 1){
-          #generate filtering particles X_apf for psi the next iteration
-          #APF outputs filtering X_apf for the next psi, and smoothing X_apf_s
-          #for the final calculation
-
-          output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                                            breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]),
-                                N[l], psi_pa, init = FALSE)
-          X_apf <- output[[1]]
-          w_apf <- output[[2]]
-          Z_apf[l] <- output[[3]]
-          ancestors <- output[[4]]
-          log_likelihoods <- output[[6]]
-
-        }
-
-        #to speed up the algorithm, I just fix the number of iterations to be k.
-        #Here k = 5
-
-        if(l <= k ){
-          #cat('l=',l)
-          #receive filtering particles X_apf for psi
-          psi_pa <- learn_psi(X_apf, obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                              model, log_likelihoods)
-
-          if(l > k & N[max(l-k,1)] == N[l] & is.unsorted(Z_apf[max(l-k,1):l])){
-            N[l+1] <- 2*N[l]
-
-          }else{
-            N[l+1] <- N[l]
-          }
-
-          l <- l+1
-          #print('finish l')
-        }else break
+      
+    }
+    
+    #to speed up the algorithm, I just fix the number of iterations to be k.
+    #Here k = 5
+    
+    if(l <= k ){
+      #cat('l=',l)
+      #receive filtering particles X_apf for psi
+      psi_pa <- learn_psi(X_apf, obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
+                          model, log_likelihoods)
+      
+      if(l > k & N[max(l-k,1)] == N[l] & is.unsorted(Z_apf[max(l-k,1):l])){
+        N[l+1] <- 2*N[l]
+        
+      }else{
+        N[l+1] <- N[l]
       }
       
-      
-      X_apf_record[breaks[[index]][(b-1)]:(breaks[[index]][b]-1) , ,] <- X_apf 
-      w_apf_record[breaks[[index]][(b-1)]:(breaks[[index]][b]-1) ,] <- w_apf 
-
-      psi_pa1 <- rbind(psi_pa1, psi_pa)
-
-      #ancestors1 <- rbind(ancestors1, ancestors)
-      #w_apf1 <- rbind(w_apf1, w_apf)
-      #combined[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),,] <- X_apf
-
-    }
-
-    psi_final[[index]] <- psi_pa1
+      l <- l+1
+      #print('finish l')
+    }else break
   }
+  
+  
+   
+  
+  
+  
+  #ancestors1 <- rbind(ancestors1, ancestors)
+  #w_apf1 <- rbind(w_apf1, w_apf)
+  #combined[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),,] <- X_apf
+  
+
+  
   #output psi
-  return(list(X_apf_record, w_apf_record, psi_final, Z_apf = Z_apf[l], ancestors))
+  return(list(X_apf, w_apf, psi_pa, Z_apf = Z_apf[l], ancestors))
 }
