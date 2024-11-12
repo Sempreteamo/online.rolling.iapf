@@ -11,19 +11,26 @@
 #'
 generate_blocks <- function(lag, len){
   num_blocks <- ceiling(len / lag)
-
+  
   psi_index <- numeric(len)
-
+  
   breaks <- list()
-
+  
   breaks[[1]] <- seq(1, len, by = lag)
   breaks[[2]] <- c(1, seq(floor(lag/2 + 1), len, by = lag))
-
-  if (utils::tail( breaks[[1]], 1) != len) {
+  
+  if (utils::tail(breaks[[1]], 1) == len) {
+    breaks[[1]][length(breaks[[1]])] <- len + 1
+    
+  } else if (utils::tail(breaks[[1]], 1) != len) {
     breaks[[1]] <- c(breaks[[1]], len + 1)
   }
-
-  if (utils::tail(breaks[[2]], 1) != len) {
+  
+  
+  if (utils::tail(breaks[[2]], 1) == len) {
+    breaks[[2]][length(breaks[[2]])] <- len + 1
+    
+  } else if (utils::tail(breaks[[2]], 1) != len) {
     breaks[[2]] <- c(breaks[[2]], len + 1)
   }
 

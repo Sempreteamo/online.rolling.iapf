@@ -24,7 +24,6 @@
 #' output <- generate_blocks(lag, Time)
 #' breaks_ <- output[[1]]
 #' psi_index_ <- output[[2]]
-#' run_block_ <- c(2, length(breaks_[[1]]), 2, length(breaks_[[2]]))
 #'
 #' model <- list(ini_mu = ini, ini_cov = ini_c, tran_mu = tran_m, tran_cov = tran_c, obs_params = obs_p,
 #'  eval_likelihood = evaluate_likelihood_lg, simu_observation = simulate_observation_lg,
@@ -44,7 +43,7 @@
 #' smoothing <- filter[[2]]
 #'
 #' data <- list(obs = obs_, breaks = breaks_, 
-#' psi_index = psi_index_, run_block = run_block_)
+#' psi_index = psi_index_)
 #'
 #' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users
 #'
