@@ -102,7 +102,6 @@
 #' w <- output2[[2]]
 #' logZ_update <- output2[[3]]
 #' 
-#' logZ = logZ + logZ_update
 
 #' filter_t <- compute_fkf_filtering(params, obs_[1:specific_time,])
 #' filtering_t <- filter_t[[1]]
