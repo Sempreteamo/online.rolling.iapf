@@ -15,7 +15,6 @@
 #'
 run_iAPF <- function(model, data, Napf){
   breaks <- data$breaks
-  psi_index <- data$psi_index
   obs <- data$obs
   run_block <- data$run_block
   past <- data$past

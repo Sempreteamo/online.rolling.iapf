@@ -5,7 +5,7 @@
 #' library(FKF)
 #' Napf = N = 200
 #' lag = 10
-#' Time = 56
+#' Time = 51
 #' d_ = 1
 #'
 #' alpha = 0.42
@@ -47,7 +47,7 @@
 #'
 #' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users
 #'
-#'log_ratio <- vector()
+#' log_ratio <- vector()
 #'
 #'for(i in 1:1){
 #'set.seed(i*2)
@@ -66,36 +66,46 @@
 #' #plot(x = c(1:Time), y = avg[1,])
 #' }
 #' 
-#' specific_time = 112
+#' specific_time = 60
 #' 
 #' #update observations:
 #' 
 #' if(nrow(obs_) < specific_time){
 #' obs_ <- rbind(obs_, sample_obs(model, specific_time - nrow(obs_), d_)) 
-#' output <- generate_blocks(lag, specific_time)
-#' breaks_ <- output[[1]]
-#' psi_index_ <- output[[2]]
 #' 
-#' nearest_start_time1 <-  max(breaks_[[1]][breaks_[[1]] <= nrow(w)])
-#' nearest_start_time2 <-  max(breaks_[[2]][breaks_[[2]] <= nrow(w)])
-#' max = max(nearest_start_time1, nearest_start_time2)
-#' b = which(breaks_[[1]] == nearest_start_time1)
-#' b2 = which(breaks_[[2]] == nearest_start_time2)
-#' run_block_ <- c(b + 1, length(breaks_[[1]]), b2 + 1, length(breaks_[[2]]) )
+#' #find and extend the nearest block to t
+#' combined_values <- combined_values[-c(length(breaks[[1]]), length(breaks[[1]]) + length(breaks[[2]]))]
 #' 
-#' data <- list(obs = obs_, breaks = breaks_, 
-#' psi_index = psi_index_, run_block = run_block_)
+#' nearest <- max(combined_values[combined_values < specific_time])
 #' }
 #' 
 #' 
-#' output_t <- perform_online_setting(data, specific_time, w, X, Napf, psi)
-#' logZ_t <- output_t[[3]]
-#' psi <- output_t[[4]]
-#' X <- output_t[[1]]
-#' w <- output_t[[2]]
+#' output1 <- position_in_list(breaks_, nearest, combined_values)
+#' index <- output1[[1]]
+#' position <- output1[[2]] + 1
 #' 
+#' #update data
+#' data$breaks[[index]][position] <- specific_time + 1
+#' data$run_block <- c(index, position)
+#' data$past <- list(X[nearest - 1,,], w[nearest - 1,])
+#' data$obs <- obs_
+#' 
+#' #psi updated at times min(\Delta_{k, t}^m) ... t-1
+#' output_t <- run_iAPF(model, data, Napf)
+#' psi_update <- output_t[[3]] 
+#' 
+#' psi_t <- rbind(psi[1:nearest - 1,], psi_update)
+#' 
+#' #run psi-APF over times min(\Delta_{k, t}^m) ... t-1
+#' output2 <- run_psi_APF(model, list(obs, breaks[[1]][1], 0, 0), Napf, psi_t, init = FALSE)
+#' X <- output2[[1]]
+#' w <- output2[[2]]
+#' logZ_update <- output2[[3]]
+#' 
+#' logZ = logZ + logZ_update
+
 #' filter_t <- compute_fkf_filtering(params, obs_[1:specific_time,])
 #' filtering_t <- filter_t[[1]]
-#' log_ratio <- compute_log_ratio(logZ_t, filtering_t)
+#' log_ratio <- compute_log_ratio(logZ_update, filtering_t)
 #' }
 

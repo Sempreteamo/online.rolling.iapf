@@ -42,10 +42,13 @@ generate_blocks <- function(lag, len){
     if (i == 1) {
       start_time <- start_time
       end_time <- floor((3/4) * lag)
-    }
-    else {
-      start_time <- start_time + floor((1/4) * lag)
-      end_time <- end_time - floor((1/4) * lag)
+    }else{
+      start_time <- min(start_time + floor((1/4) * lag), len)
+      if(start_time != len){
+        end_time <- end_time - floor((1/4) * lag)
+      }else{
+        end_time <- len
+      }
     }
 
     psi_index[start_time:end_time] <- 1
