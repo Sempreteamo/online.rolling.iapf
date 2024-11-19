@@ -108,7 +108,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
     logZ <- logZ + normalise_weights_in_log_space(w[Time,])[[2]]
 
   }else{
-    if(breaks[1] == 1){
+    if(breaks[1] == lag){
 
       X[1,,] <- sample_twisted_initial(list(mean = ini_mu, cov = as.matrix(ini_cov)[1,1]), psi_pa[1,], N)
 
@@ -217,7 +217,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init){
   }
 
 
-  return(list(X, w, logZ, ancestors, resample_time, log_likelihoods, avg))
+  return(list(X, w, logZ, ancestors, normalise_weights_in_log_space(w[Time,])[[2]], log_likelihoods, avg))
 }
 #' @import mvnfast
 #' @import stats

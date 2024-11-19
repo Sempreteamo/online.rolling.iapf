@@ -8,4 +8,4 @@ position_in_list <- function(breaks_, nearest, combined_values) {
       position_in_list <- which(breaks_[[2]] == nearest)
       }
   return(c(list_number, position_in_list))
-  }
+}

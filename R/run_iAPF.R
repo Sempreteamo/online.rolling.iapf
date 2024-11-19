@@ -23,7 +23,8 @@ run_iAPF <- function(model, data, Napf){
   X_apf_record <- past[[1]]
   
   index <- run_block[1]
-  b <- run_block[2]
+  b_s <- run_block[2]
+  b_e <- run_block[3]
   
   k <- model$parameters$k
   Time <- nrow(obs)
@@ -33,13 +34,13 @@ run_iAPF <- function(model, data, Napf){
   Z_apf <- vector()
   N[l] = Napf
   
-  if(b == 2){
-    output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                                      breaks[[index]][(b-1):b], 0, 0), N[l], psi_pa = 0, init = TRUE) #high d pass
+  if(t == breaks[[index]][1]){
+    output <- run_psi_APF(model, list(obs[1:b_e,],
+                                      1: b_e, 0, 0), N[l], psi_pa = 0, init = TRUE) #high d pass
   }else{
     
-    output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                                      breaks[[index]][(b-1):b], 
+    output <- run_psi_APF(model, list(obs[b_s:b_e,],
+                                      b_s:b_e, 
                                       w_apf_record, 
                                       X_apf_record), N[l],
                           psi_pa = 0, init = TRUE)
@@ -60,8 +61,8 @@ run_iAPF <- function(model, data, Napf){
       #APF outputs filtering X_apf for the next psi, and smoothing X_apf_s
       #for the final calculation
       
-      output <- run_psi_APF(model, list(obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
-                                        breaks[[index]][(b-1):b], w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]),
+      output <- run_psi_APF(model, list(obs[b_s:b_e,],
+                                        b_s: b_e, w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]),
                             N[l], psi_pa, init = FALSE)
       X_apf <- output[[1]]
       w_apf <- output[[2]]
@@ -77,7 +78,7 @@ run_iAPF <- function(model, data, Napf){
     if(l <= k ){
       #cat('l=',l)
       #receive filtering particles X_apf for psi
-      psi_pa <- learn_psi(X_apf, obs[breaks[[index]][(b-1)]:(breaks[[index]][b]-1),],
+      psi_pa <- learn_psi(X_apf, obs[b_s:b_e,],
                           model, log_likelihoods)
       
       if(l > k & N[max(l-k,1)] == N[l] & is.unsorted(Z_apf[max(l-k,1):l])){
@@ -104,5 +105,5 @@ run_iAPF <- function(model, data, Napf){
 
   
   #output psi
-  return(list(X_apf, w_apf, psi_pa, Z_apf = Z_apf[l], ancestors))
+  return(list(X_apf[dim(X_apf)[1],,], w_apf[nrow(w_apf),], psi_pa, Z_apf = Z_apf[l], ancestors))
 }

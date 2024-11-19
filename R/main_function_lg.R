@@ -4,8 +4,8 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 10
-#' Time = 51
+#' lag = 50
+#' Time = 50
 #' d_ = 1
 #'
 #' alpha = 0.42
