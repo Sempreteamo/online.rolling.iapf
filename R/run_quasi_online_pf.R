@@ -73,7 +73,7 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
                which(is.na(psi_final))[1] - 1) #psi updated to where
         
         if( psi_u > 0){
-          output1 <- run_psi_APF(model, list(obs, breaks[[1]][1], 0, 0), 
+          output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], breaks[[1]][1], 0, 0), 
                                  Napf, psi_final, init = FALSE)
           logZ <- logZ + output1[[3]]
           
