@@ -1,35 +1,36 @@
 
-perform_online_setting <- function(data, specific_time, w_record, X_record, Napf, psi_final){
-  breaks_ <- data$breaks
+perform_online_setting <- function(data, specific_time, X_apf, w_apf, psi_final, logZ){
+  breaks <- data$breaks
   obs <- data$obs
-  psi_index <- data$psi_index
-  run_block <- data$run_block
-  t = specific_time
   Time <- nrow(obs)
-  pre_t <- nrow(psi_final)
   
-  if(pre_t < Time){
-    psi_final <- rbind(psi_final, matrix(NA, Time - pre_t, dim(psi_final)[2]))
+  #find and extend the nearest block to t
+  nearest <- unlist(breaks)[which.max(unlist(breaks) < specific_time)]
+  
+  if(nearest %in% breaks[[1]] ){
+    index <- 1
+  }else{
+    index <- 2
   }
-  
-  output <- run_iAPF(model, data, Napf, X_record, w_record)
-  
-  X_record <- output[[1]]
-  w_record <- output[[2]]
-  psi <- output[[3]]
-  
-  M = max(breaks_[[1]][run_block[1] - 1], breaks[[2]][run_block[3] - 1])
-  
 
-  psi_final[M:specific_time,] <- combine_psi(psi, psi_index[M:specific_time])
   
-  output1 <- run_psi_APF(model, list(obs[1:t,], 
-                                     breaks[[1]][1], 0, 0), Napf, psi_final, init = FALSE)
-  #X <- output1[[1]]
-  #w <- output1[[2]]
-  logZ <- output1[[3]]
+  data$run_block <- c(index, nearest + 1, specific_time)
+  data$past <- list(X_apf[[index]], w_apf[[index]]) 
   
-  return(list(X = X_record, w = w_record, logZ = logZ, psi_final = psi_final))
+  #Run iAPF to get psi and X, w at final time point
+  output <- run_iAPF(model, data, Napf)
+  X_apf[[index]] <- output[[1]]
+  w_apf[[index]] <- output[[2]]
+  psi_pa <- output[[3]]
+  
+  #psi_pa <- rbind(psi_final, psi_pa)
+  
+  #Update psi-APF
+  output1 <- run_psi_APF(model, list(obs[(nearest + 1):specific_time,], breaks[[1]][1], 0, 0), 
+                         Napf, psi_pa, init = FALSE)
+  logZ <- logZ + output1[[3]]
+  
+  return(list(X = X_apf, w = w_apf, logZ = logZ, psi_final = psi_final))
   
 }
 

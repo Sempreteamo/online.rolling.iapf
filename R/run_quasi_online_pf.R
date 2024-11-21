@@ -31,6 +31,12 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
   logZ = 0
   psi_l = 1
   
+  for (i in 1:2) {
+    if (tail(breaks[[i]], 1) != Time) {  # 检查最后一个值是否为 T
+      breaks[[i]] <- c(breaks[[i]], Time)  # 追加 T
+    }
+  }
+  
   #step 1: Decide whether t is the upper boundary of a block
   for(t in 1:Time){
     
@@ -84,10 +90,11 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
       }
       
     }
+    
 
   }
 
-  return(list(X = X, w = w, logZ = logZ, psi_final = psi_final1))
+  return(list(X = X_apf, w = w_apf, logZ = logZ, psi_final = psi_final1))
 }
 
 
