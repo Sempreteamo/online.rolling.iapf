@@ -2,7 +2,6 @@
 #'
 #' @param model Model information
 #' @param data Observations
-#' @param lag Length of time intervals
 #' @param Napf Number of particles used in the smoothing process
 #' @param N Number of particles used in the filtering process
 #'
@@ -16,7 +15,7 @@
 #'
 #' @export
 #'
-run_quasi_online_pf <- function(model, data, lag, Napf, N){
+run_quasi_online_pf <- function(model, data, Napf, N){
   breaks <- data$breaks
   psi_index <- data$psi_index
   obs <- data$obs
@@ -24,16 +23,19 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
   Xs <- array(NA, dim = c(nrow(obs), N, d))
   d = ncol(obs)
   psi_final <- matrix(NA, Time, 2*d)
+  block <- list(0, 0)
   
   X_apf <- list(NULL, NULL)
   w_apf <- list(NULL, NULL)
+  
+  X = w <- list(NULL, NULL)
   
   logZ = 0
   psi_l = 1
   
   for (i in 1:2) {
-    if (tail(breaks[[i]], 1) != Time) {  # 检查最后一个值是否为 T
-      breaks[[i]] <- c(breaks[[i]], Time)  # 追加 T
+    if (tail(breaks[[i]], 1) != Time) {  # 
+      breaks[[i]] <- c(breaks[[i]], Time)  #
     }
   }
   
@@ -50,8 +52,10 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
           b_s <- if (length(breaks[[index]]) > 1) (breaks[[index]][-2] + 1) else 1
           
         }else{
-          b_s <- max((t - lag + 1), 1)
+          b_s <- max(breaks[[index]][block[[index]]], 1)
         }
+        
+        block[[index]] <- block[[index]] + 1
 
         data$run_block <- c(index, b_s, t) #which layer, which block iAPF runs
         data$past <- list(X_apf[[index]], w_apf[[index]]) #initialize distribution
@@ -79,11 +83,16 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
                which(is.na(psi_final))[1] - 1) #psi updated to where
         
         if( psi_u > 0){
-          output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], breaks[[1]][1], 0, 0), 
+          #output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], breaks[[index]][1], X[[index]][psi_l - 1,,], w[[index]][psi_l - 1,]), 
+           #                      Napf, psi_final, init = FALSE)
+          output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], breaks[[1]][1],0, 0), 
                                  Napf, psi_final, init = FALSE)
+          X[[index]] <- output1[[1]]
+          w[[index]] <- output1[[2]]
           logZ <- logZ + output1[[3]]
           
         }
+        
         
         psi_l = psi_u + 1
         
@@ -94,7 +103,7 @@ run_quasi_online_pf <- function(model, data, lag, Napf, N){
 
   }
 
-  return(list(X = X_apf, w = w_apf, logZ = logZ, psi_final = psi_final1))
+  return(list(X = X, w = w, logZ = logZ, psi_final = psi_final))
 }
 
 
