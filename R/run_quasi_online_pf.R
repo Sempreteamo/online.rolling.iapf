@@ -20,7 +20,6 @@ run_quasi_online_pf <- function(model, data, Napf, N){
   psi_index <- data$psi_index
   obs <- data$obs
   Time <- nrow(obs)
-  Xs <- array(NA, dim = c(nrow(obs), N, d))
   d = ncol(obs)
   psi_final <- matrix(NA, Time, 2*d)
   block <- list(0, 0)
@@ -28,7 +27,7 @@ run_quasi_online_pf <- function(model, data, Napf, N){
   X_apf <- list(NULL, NULL)
   w_apf <- list(NULL, NULL)
   
-  X = w <- list(NULL, NULL)
+  X = w <- NULL
   
   logZ = 0
   psi_l = 1
@@ -55,7 +54,7 @@ run_quasi_online_pf <- function(model, data, Napf, N){
           b_s <- max(breaks[[index]][block[[index]]], 1)
         }
         
-        block[[index]] <- block[[index]] + 1
+        #block[[index]] <- block[[index]] + 1
 
         data$run_block <- c(index, b_s, t) #which layer, which block iAPF runs
         data$past <- list(X_apf[[index]], w_apf[[index]]) #initialize distribution
@@ -85,16 +84,22 @@ run_quasi_online_pf <- function(model, data, Napf, N){
         if( psi_u > 0){
           #output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], breaks[[index]][1], X[[index]][psi_l - 1,,], w[[index]][psi_l - 1,]), 
            #                      Napf, psi_final, init = FALSE)
-          output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], breaks[[1]][1],0, 0), 
-                                 Napf, psi_final, init = FALSE)
-          X[[index]] <- output1[[1]]
-          w[[index]] <- output1[[2]]
-          logZ <- logZ + output1[[3]]
+          if(psi_l != 1){
+            output1 <- run_psi_APF(model, list(obs, c(psi_l,psi_u), w[psi_l - 1,], X[psi_l - 1,,]), 
+                                   Napf, psi_final, init = FALSE, jump_ini = TRUE)
+          }else{
+            output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u),0,0), 
+                                   Napf, psi_final, init = FALSE)
+          }
+         
+          X <- output1[[1]]
+          w <- output1[[2]]
+          logZ <- output1[[3]]
           
         }
         
         
-        psi_l = psi_u + 1
+        psi_l = max(psi_u, 1)
         
       }
       
