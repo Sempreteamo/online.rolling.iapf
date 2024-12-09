@@ -29,7 +29,10 @@ run_psi_APF <- function(model, data, N, psi_pa, init, jump_ini = FALSE){
   obs <- as.matrix(data[[1]])
   breaks <- data[[2]]
   w_previous <- data[[3]]
-  X_previous <- as.matrix(data[[4]])
+  X_previous <- data[[4]]
+  
+ 
+  
   Time <- nrow(obs)
   d = nrow(as.matrix(A))
   kappa <- model$parameters$kappa
@@ -48,11 +51,12 @@ run_psi_APF <- function(model, data, N, psi_pa, init, jump_ini = FALSE){
       #the first block. break controls which block the algorithm is running
 
       X[1, ,] <- mvnfast::rmvn(N , ini_mu, ini_cov)
+      
       for(i in 1:N){
         w[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
 #print(w[1,i])
       }
-
+      
 
     }else{
 

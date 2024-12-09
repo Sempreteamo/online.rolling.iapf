@@ -52,12 +52,13 @@
 #'for(i in 1:1){
 #'set.seed(i*2)
 #' #run the algorithm
-#' output <- run_quasi_online_pf(model, data, lag, Napf, N)
+#' output <- run_quasi_online_pf(model, data, Napf, N)
 #' X<- output[[1]]
 #' w<- output[[2]]
 #' logZ <- output[[3]]
-#' psi <- output[[4]]
-#' #avg <- output[[5]]
+#' psi_final <- output[[4]]
+#' X_apf <- output[[5]]
+#' w_apf <- output[[6]]
 #'
 #' log_ratio[i] <- compute_log_ratio(logZ, filtering)
 #' print(log_ratio[i] )
@@ -73,7 +74,13 @@
 #' data$obs <- rbind(obs_, sample_obs(model, specific_time - nrow(obs_), d_)) 
 #' }
 #' 
-#' output1 <- perform_online_setting(data, specific_time, X, w, psi, logZ)
+#' output <- generate_blocks(lag, specific_time)
+#' data$breaks <- output[[1]]
+#' #data$psi_index <- output[[2]]
+#' 
+#' previous_info <- list(previous_time = 50, 
+#' X_pre = X_apf, w_pre = w_apf, psi_final = psi_final, X = X, w = w)
+#' output1 <- run_quasi_online_pf(model, data, Napf, N, previous_info)
 #' logZ <- output1[[3]]
 #' 
 #' filter_t <- compute_fkf_filtering(params, data$obs)

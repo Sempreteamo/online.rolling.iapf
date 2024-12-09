@@ -36,13 +36,13 @@ run_iAPF <- function(model, data, Napf){
   
   if(t == breaks[[index]][1]){
     output <- run_psi_APF(model, list(obs[1:b_e,],
-                                      1: b_e, 0, 0), N[l], psi_pa = 0, init = TRUE) #high d pass
+                                      1: b_e, 0, as.matrix(0)), N[l], psi_pa = 0, init = TRUE) #high d pass
   }else{
     
     output <- run_psi_APF(model, list(obs[b_s:b_e,],
                                       b_s:b_e, 
                                       w_apf_record, 
-                                      X_apf_record), N[l],
+                                      as.matrix(X_apf_record)), N[l],
                           psi_pa = 0, init = TRUE)
   }
   
@@ -62,7 +62,7 @@ run_iAPF <- function(model, data, Napf){
       #for the final calculation
       
       output <- run_psi_APF(model, list(obs[b_s:b_e,],
-                                        b_s: b_e, w_apf[nrow(w_apf),], X_apf[nrow(X_apf),,]),
+                                        b_s: b_e, w_apf[nrow(w_apf),], as.matrix(X_apf[nrow(X_apf),,])),
                             N[l], psi_pa, init = FALSE)
       X_apf <- output[[1]]
       w_apf <- output[[2]]
