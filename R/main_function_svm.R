@@ -52,7 +52,7 @@
 #'log_ratio <- vector()
 #'logZ <- vector()
 #'
-#'for(i in 1:10){
+#'for(i in 1:1){
 #'set.seed(i^2)
 #' #run the algorithm
 #' output <- run_quasi_online_pf(model, data, lag, Napf, N)

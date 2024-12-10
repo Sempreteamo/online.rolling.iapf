@@ -36,11 +36,9 @@ learn_psi <- function(x, obs, model, log_likelihoods){
     psi_pa[t,] <- optimize_psi(x[t,,], log_psi[t,])
 
 
-    #print(log_psi_pa[t, 1:d])
-    #print(obs[t, drop = FALSE])
 
   }
-  #print(log_psi_pa)
-  return(params = psi_pa)
+ 
+  return(psi_pa = psi_pa)
 
 }

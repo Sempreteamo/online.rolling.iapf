@@ -4,7 +4,7 @@
 \alias{eval_twisted_potential}
 \title{Function to provide the log-density of a twisted potential function}
 \usage{
-eval_twisted_potential(model, psi_pa, x, likelihoods)
+eval_twisted_potential(model, psi_pa, x, log_likelihoods)
 }
 \arguments{
 \item{model}{List containing model parameters}
@@ -13,7 +13,7 @@ eval_twisted_potential(model, psi_pa, x, likelihoods)
 
 \item{x}{States at which to evaluate}
 
-\item{likelihoods}{Likelihoods of the data point at which to evaluate}
+\item{log_likelihoods}{log_likelihoods of the data point at which to evaluate}
 }
 \value{
 Twisted potential function evaluated at x

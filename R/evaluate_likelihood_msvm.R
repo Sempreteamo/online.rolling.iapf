@@ -1,6 +1,6 @@
-#' Function to evaluate the log-likelihood of the observations for multivariate svm models
+#' Function to evaluate the log-likelihood of the observations for multivariate sv models
 #'
-#'This function evaluates the log-likelihood of the observations for Gaussian linear obs_paramss.
+#'This function evaluates the log-likelihood of the observations for multivariate sv obs_paramss.
 #'It is expected to be updated to evaluate log-density of general potential functions.
 #'
 #' @param x State at which to evaluate

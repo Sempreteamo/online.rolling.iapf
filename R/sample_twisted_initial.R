@@ -17,7 +17,6 @@ sample_twisted_initial <- function(params, psi, N){
 
   cov <- output[[2]]
 
-  #set.seed(1234)
   samples <- mvnfast::rmvn(N, mu, cov)
 
   return(samples)

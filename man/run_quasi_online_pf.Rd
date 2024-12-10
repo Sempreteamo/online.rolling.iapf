@@ -2,30 +2,30 @@
 % Please edit documentation in R/run_quasi_online_pf.R
 \name{run_quasi_online_pf}
 \alias{run_quasi_online_pf}
-\title{Function to run the whole iAPF processes and generate final results}
+\title{Function to run the whole quasi-online-iAPF processes and generate final results}
 \usage{
-run_quasi_online_pf(model, data, lag, Napf, N)
+run_quasi_online_pf(model, data, Napf, N, previous_info = NULL)
 }
 \arguments{
 \item{model}{Model information}
 
 \item{data}{Observations}
 
-\item{lag}{Length of time intervals}
-
 \item{Napf}{Number of particles used in the smoothing process}
 
 \item{N}{Number of particles used in the filtering process}
+
+\item{previous_info}{Transfer information of the old results when the function is used online,}
 }
 \value{
 A list contains
-X is the particles
-w is the weights of particles
+X is the particles generated within the psi-APF
+w is the weights of particles generated within the psi-APF
 logZ is the estimated normalising constant
-Xs is the smoothing particles
-log_ratio is the log_ratio between estimates and real normalising constant
-dist is the distance between real estimates and smoothing distribution
+psi_final is psi function generated
+X_apf is the particles generated within the iAPF
+w_apf is the weights of particles generated within the iAPF
 }
 \description{
-Function to run the whole iAPF processes and generate final results
+Function to run the whole quasi-online-iAPF processes and generate final results
 }

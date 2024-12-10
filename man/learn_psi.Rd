@@ -2,9 +2,9 @@
 % Please edit documentation in R/learn_psi.R
 \name{learn_psi}
 \alias{learn_psi}
-\title{Function to learn twisting psi function parameters}
+\title{Function to learn twisting log_psi function parameters}
 \usage{
-learn_psi(x, obs, model, likelihoods)
+learn_psi(x, obs, model, log_likelihoods)
 }
 \arguments{
 \item{x}{A collection of particle locations}
@@ -13,11 +13,11 @@ learn_psi(x, obs, model, likelihoods)
 
 \item{model}{List containing model parameters}
 
-\item{likelihoods}{Likelihoods of the particles generated during the iAPF}
+\item{log_likelihoods}{log_likelihoods of the particles generated during the iAPF}
 }
 \value{
-Twisting psi function parameters
+Twisting log_psi function parameters
 }
 \description{
-This function takes a collection of particle locations and calculates twisting psi function arguments.
+This function takes a collection of particle locations and calculates twisting log_psi function arguments.
 }

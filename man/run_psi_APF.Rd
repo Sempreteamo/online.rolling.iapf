@@ -4,26 +4,28 @@
 \alias{run_psi_APF}
 \title{Function of psi_APF}
 \usage{
-run_psi_APF(model, data, N, psi_pa, init)
+run_psi_APF(model, data, N, psi_pa, init, jump_ini = FALSE)
 }
 \arguments{
 \item{model}{List containing model parameters}
 
-\item{data}{List containing time series on which to run the filter}
+\item{data}{List containing required data information on which to run the filter}
 
 \item{N}{Number of particles to use}
 
 \item{psi_pa}{Parameters of the twisting function}
 
-\item{init}{Index to decide whether the algorithm is at its initialization state}
+\item{init}{Index to decide whether the algorithm is at its initialized block}
+
+\item{jump_ini}{Index to decide whether the algorithm is at the middle stage of the psi-APF}
 }
 \value{
 A list containing:
-x is the particle set generated during the sampling and resampling approach
+X is the particle set generated during the sampling and resampling approach
 w is the weights of particles
-ancestors is indices associated with every resampling event
 logZ is normalizing constant estimate
-resample_time is the specific time that resample happens
+ancestors is indices associated with every resampling event
+log_likelihoods is the log likelihoods for each particle X given likelihood function
 }
 \description{
 This function performs sampling and resampling procedures of

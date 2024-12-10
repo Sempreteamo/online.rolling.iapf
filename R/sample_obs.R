@@ -20,7 +20,7 @@ sample_obs <- function(model, Time, d){
     X[1,] <- mvnfast::rmvn(1, ini, ini_c)
 
     for(t in 2:Time){
-      X[t,] <- rnorm(d, ini + tran_mu*(X[t-1,] - ini), sqrt(as.matrix(tran_cov)[1,1]))
+      X[t,] <- stats::rnorm(d, ini + tran_mu*(X[t-1,] - ini), sqrt(as.matrix(tran_cov)[1,1]))
     }
 
     for(t in 1:Time){
@@ -32,3 +32,4 @@ sample_obs <- function(model, Time, d){
 }
 
 #' @import mvnfast
+#' @import stats
