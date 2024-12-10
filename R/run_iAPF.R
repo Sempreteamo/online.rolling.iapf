@@ -34,7 +34,7 @@ run_iAPF <- function(model, data, Napf){
   Z_apf <- vector()
   N[l] = Napf
 
-  if(t == breaks[[index]][1]){
+  if(b_e == breaks[[index]][1]){
   
     output <- run_psi_APF(model, list(obs[1:b_e,],
                                       1: b_e, 0, as.matrix(0)), N[l], psi_pa = 0, init = TRUE) #high d pass
@@ -52,7 +52,7 @@ run_iAPF <- function(model, data, Napf){
   w_apf <- output[[2]]
   Z_apf[l] <- output[[3]]
   ancestors <- output[[4]]
-  log_likelihoods <- output[[6]]
+  log_likelihoods <- output[[5]]
   
   while(TRUE){
     
