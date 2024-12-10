@@ -4,7 +4,7 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 50
+#' lag = 10
 #' Time = 50
 #' d_ = 1
 #'

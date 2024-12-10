@@ -61,7 +61,8 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
       for (index in indices) {
         
         if(t == Time){
-          b_s <- if (length(breaks[[index]]) > 1) (breaks[[index]][-2] + 1) else 1
+          b_s <- if (length(breaks[[index]]) > 1) breaks[[index]][length(breaks[[index]]) - 1] + 1 else 1
+
           
         }else{
           b_s <- max(breaks[[index]][block[[index]]], 1)
