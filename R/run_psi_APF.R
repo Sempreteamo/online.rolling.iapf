@@ -25,7 +25,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init, jump_ini = FALSE){
   B <- model$tran_cov
   obs_params <- model$obs_params
   re = 0
-
+  
   obs <- as.matrix(data[[1]])
   breaks <- data[[2]]
   w_previous <- data[[3]]

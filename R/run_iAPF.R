@@ -33,19 +33,21 @@ run_iAPF <- function(model, data, Napf){
   l = 1
   Z_apf <- vector()
   N[l] = Napf
-  
+
   if(t == breaks[[index]][1]){
+  
     output <- run_psi_APF(model, list(obs[1:b_e,],
                                       1: b_e, 0, as.matrix(0)), N[l], psi_pa = 0, init = TRUE) #high d pass
+  
   }else{
-    
+   
     output <- run_psi_APF(model, list(obs[b_s:b_e,],
                                       b_s:b_e, 
                                       w_apf_record, 
                                       as.matrix(X_apf_record)), N[l],
                           psi_pa = 0, init = TRUE)
   }
-  
+ 
   X_apf <- output[[1]]
   w_apf <- output[[2]]
   Z_apf[l] <- output[[3]]

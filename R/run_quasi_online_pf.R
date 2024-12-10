@@ -27,8 +27,8 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
   
   if(is.null(previous_info)){
     previous_time <- 0
-    X_apf <- list(NULL, NULL)
-    w_apf <- list(NULL, NULL) 
+    X_apf <- list(vector(), vector())
+    w_apf <- list(vector(), vector()) 
     psi_final <- matrix(NA, Time, 2*d)
     psi_l = 1
     X = w <- NULL
@@ -78,7 +78,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         X_apf[[index]] <- output[[1]]
         w_apf[[index]] <- output[[2]]
         psi_pa <- output[[3]]
-       
+        
         #Step 3: Update psi
         a = 1
         for(i in b_s:t){

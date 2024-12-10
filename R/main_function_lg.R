@@ -66,6 +66,8 @@
 #'
 #' #plot(x = c(1:Time), y = avg[1,])
 #' }
+#' 
+#' 
 #' specific_time = 55
 #' 
 #' #update observations:
