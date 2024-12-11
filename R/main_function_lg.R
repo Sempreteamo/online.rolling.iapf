@@ -21,7 +21,8 @@
 #' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
 #' obs_p <- list(obs_mean = obs_m, obs_cov = obs_c)
 #'
-#' output <- generate_blocks(lag, Time)
+#' #output <- generate_blocks(lag, Time)
+#' output <- generate_blocks_half(lag, Time)
 #' breaks_ <- output[[1]]
 #' psi_index_ <- output[[2]]
 #'

@@ -47,6 +47,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
   
   #step 1: Decide whether t is the upper boundary of a block
   for(t in (previous_time + 1):Time){
+    print(t)
     
     if(t %in% unlist(breaks)){
 
@@ -99,8 +100,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         
         
         if( psi_u > 0){
-          #output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], breaks[[index]][1], X[[index]][psi_l - 1,,], w[[index]][psi_l - 1,]), 
-           #                      Napf, psi_final, init = FALSE)
+          
           if(psi_l != 1){
             output1 <- run_psi_APF(model, list(obs, c(psi_l,psi_u), w[psi_l - 1,], X[psi_l - 1,,]), 
                                    Napf, psi_final, init = FALSE, jump_ini = TRUE)
