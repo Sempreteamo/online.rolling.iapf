@@ -70,7 +70,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
           b_s <- max(breaks[[index]][block[[index]]], 1)
         }
         
-        #block[[index]] <- block[[index]] + 1
+        block[[index]] <- block[[index]] + 1
 
         data$run_block <- c(index, b_s, t) #which layer, which block iAPF runs
         data$past <- list(X_apf[[index]], w_apf[[index]]) #initialize distribution
@@ -102,8 +102,9 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         if( psi_u > 0){
           
           if(psi_l != 1){
-            output1 <- run_psi_APF(model, list(obs, c(psi_l,psi_u), w[psi_l - 1,], X[psi_l - 1,,]), 
-                                   Napf, psi_final, init = FALSE, jump_ini = TRUE)
+            psi_l = max(psi_l - 1, 1)
+            output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u), w[nrow(w) - 1 ,], as.matrix(X[nrow(X) - 1,,])), 
+                                   Napf, psi_final[psi_l:psi_u,], init = FALSE, jump_ini = TRUE)
           }else{
             output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u),0,0), 
                                    Napf, psi_final, init = FALSE)

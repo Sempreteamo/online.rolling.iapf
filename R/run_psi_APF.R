@@ -145,21 +145,15 @@ run_psi_APF <- function(model, data, N, psi_pa, init, jump_ini = FALSE){
        }
        
      }
+   }else{
+     X[1,,] <- X_previous
+     w[1,] <- w_previous
    }
-    
-    if(jump_ini){
-      psi_l = breaks[1]
-      Time = breaks[2]
-      X[psi_l - 1,,] <- X_previous
-      w[psi_l - 1,] <- w_previous
-    }else{
-      psi_l = 2
-    }
-    
+
     ancestors[1,] <- seq(1:N)
 
     if(Time > 2){ 
-      for(t in psi_l:(Time - 1)){
+      for(t in 2:(Time - 1)){
         
      
       if(compute_ESS_log(w[t-1,]) <= kappa*N){
@@ -231,7 +225,7 @@ run_psi_APF <- function(model, data, N, psi_pa, init, jump_ini = FALSE){
   }
 
 
-  return(list(X, w, logZ, ancestors, log_likelihoods))
+  return(list(X, w, logZ, ancestors, log_likelihoods,  normalise_weights_in_log_space(w[Time,])[[2]]))
 }
 #' @import mvnfast
 #' @import stats
