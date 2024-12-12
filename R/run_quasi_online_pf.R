@@ -102,7 +102,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         if( psi_u > 0){
           
           if(psi_l != 1){
-            psi_l = max(psi_l - 1, 1)
+           
             output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u), w[nrow(w) - 1 ,], as.matrix(X[nrow(X) - 1,,])), 
                                    Napf, psi_final[psi_l:psi_u,], init = FALSE, jump_ini = TRUE)
           }else{
@@ -117,7 +117,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         }
         
         
-        psi_l = max(psi_u, 1)
+        psi_l = max(psi_u - 1, 1)
         
       }
       
