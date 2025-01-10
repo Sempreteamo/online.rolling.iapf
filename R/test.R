@@ -11,7 +11,7 @@ log_likelihoods <- matrix(NA, Time, N)
         
         #re = re + 1
         #if(t != (psi_l + 1)){
-          ancestors[t,] <- resample(w[t-1,], mode = 'multi')
+          ancestors[t,] <- resample(w[t-1,])
           logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
         #}
         
@@ -25,7 +25,7 @@ log_likelihoods <- matrix(NA, Time, N)
           X[t,i,] <- sample_twisted_transition(X[t-1, ancestors[t,i],], model, psi_pa[t,], 1)
           log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
           if(t == (psi_l + 1)){
-           w[t,i] <- w[t - 1,i] + eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
+           w[t,i] <- eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])+  w[t - 1,i] 
           }else{
             w[t,i] <- eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
           }
@@ -53,11 +53,11 @@ log_likelihoods <- matrix(NA, Time, N)
   
   t = psi_u
   #resample_time <- c(resample_time, t)
-  if(compute_ESS_log(w[t-1,]) <= 0){
+  if(compute_ESS_log(w[t-1,]) <= 50){
     re = re + 1
     
     
-    ancestors[t,] <- resample(w[t-1,], mode = 'multi')
+    ancestors[t,] <- resample(w[t-1,])
     logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
     cat('logZ =', logZ, 're= ', t, "add =", normalise_weights_in_log_space(w[t-1,])[[2]])
     
@@ -81,8 +81,11 @@ log_likelihoods <- matrix(NA, Time, N)
   
   
   
-  logZ <- logZ + normalise_weights_in_log_space(w[t,])[[2]]
-  w[t,] <- w[t,] - normalise_weights_in_log_space(w[t,])[[2]]
+  logZ <- logZ #+ normalise_weights_in_log_space(w[t,])[[2]]
+  if(t == Time){
+    logZ <- logZ + normalise_weights_in_log_space(w[t,])[[2]]
+  }
+  w[t,] <- w[t,]  - normalise_weights_in_log_space(w[t,])[[2]]
   cat('logZ =', logZ, 're= ', t, "add =", normalise_weights_in_log_space(w[t,])[[2]])
 return(list(X, w, logZ, ancestors))
 }
