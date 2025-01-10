@@ -24,7 +24,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
   d = ncol(obs)
   #psi_final[previous_time, ] <- data$
   block <- list(0, 0)
-  
+  ancestors <- matrix(NA, Time, N)
   
   if(is.null(previous_info)){
     previous_time <- 0
@@ -32,7 +32,8 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
     w_apf <- list(vector(), vector()) 
     psi_final <- matrix(NA, Time, 2*d)
     psi_l = 1
-    X = w <- NULL
+    X <- array(NA, c(Time, N, d))
+    w <- matrix(NA, Time, N)
   }else{
     previous_time <- previous_info[[1]]
     X_apf <- previous_info[[2]]
@@ -44,6 +45,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
   }
   
   logZ = 0
+  #b = 0
   
   #step 1: Decide whether t is the upper boundary of a block
   for(t in (previous_time + 1):Time){
@@ -53,7 +55,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
 
       if(previous_time != 0){
        indices <- which(sapply(breaks, function(b) 
-          max(unlist(breaks)[unlist(breaks) < specific_time] ) %in% b)) 
+          max(unlist(breaks)[unlist(breaks) < previous_time] ) %in% b)) 
        psi_index <- c(psi_index, rep(indices, Time - previous_time))
        
       }else{
@@ -77,6 +79,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         
         
         #Step 2: Run iAPF to get psi and X, w at final time point
+        #cat('no')
         output <- run_iAPF(model, data, Napf)
         X_apf[[index]] <- output[[1]]
         w_apf[[index]] <- output[[2]]
@@ -102,18 +105,24 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         if( psi_u > 0){
           
           if(psi_l != 1){
+            #cat('start to test')
+            #b = b+1
+            #output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u), w[nrow(w)-10 ,], as.matrix(X[nrow(X)-10,,])), 
+             #                      Napf, psi_final[psi_l:psi_u,], init = FALSE, jump_ini = TRUE)
            
-            output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u), w[nrow(w) - 1 ,], as.matrix(X[nrow(X) - 1,,])), 
-                                   Napf, psi_final[psi_l:psi_u,], init = FALSE, jump_ini = TRUE)
-          }else{
+            output1 <- test(model, obs, w, X, Napf, psi_final, psi_l , psi_u, logZ, ancestors)
+            logZ <- output1[[3]] + logZ
+            }else{
+              #cat('start to test_ini')
             output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u),0,0), 
                                    Napf, psi_final, init = FALSE)
+           
           }
          
-          X <- output1[[1]]
-          w <- output1[[2]]
-          logZ <- output1[[3]]
-          
+          X[psi_l:psi_u,,] <- output1[[1]][psi_l:psi_u,,]
+          w[psi_l:psi_u,] <- output1[[2]][psi_l:psi_u,]
+          #logZ <- output1[[3]] + logZ
+          ancestors[psi_l:psi_u,] <- output1[[4]][psi_l:psi_u,]
         }
         
         
