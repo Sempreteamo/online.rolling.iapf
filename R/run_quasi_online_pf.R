@@ -62,10 +62,11 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         indices <- which(sapply(breaks, function(b) t %in% b)) 
       }
       
-      for (index in indices) {
+      for (index in indices){
         
         if(t == Time){
-          b_s <- if (length(breaks[[index]]) > 1) breaks[[index]][length(breaks[[index]]) - 1] + 1 else 1
+          b_s <- if (length(breaks[[index]]) > 1) 
+            breaks[[index]][length(breaks[[index]]) - 1] + 1 else 1
 
           
         }else{
@@ -99,34 +100,38 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         #Step 4: Update psi-APF
         
         psi_u <- ifelse(is.na(which(is.na(psi_final))[1] - 1), Time, 
-                          which(is.na(psi_final))[1] - 1) #psi updated to where
+                          which(is.na(psi_final))[1] - 2) #psi updated to where
         
-        
+       
         if( psi_u > 0){
-          
+          print(c(psi_l, psi_u))
+          #output1 <- APF_with_resampling_logZ(model, obs, w, X, Napf, psi_final, psi_l , psi_u, logZ, ancestors)
           if(psi_l != 1){
-            #cat('start to test')
-            #b = b+1
-            #output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u), w[nrow(w)-10 ,], as.matrix(X[nrow(X)-10,,])), 
-             #                      Napf, psi_final[psi_l:psi_u,], init = FALSE, jump_ini = TRUE)
-           
-            output1 <- test(model, obs, w, X, Napf, psi_final, psi_l , psi_u, logZ, ancestors)
-            logZ <- output1[[3]] + logZ
+            if(psi_u != Time){
+              output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u - 1), w[psi_l - 1,], as.matrix(X[psi_l - 1,,])), 
+                                     Napf, psi_final[psi_l:(psi_u+1),], init = FALSE, jump_ini = TRUE, jump_last = TRUE)
             }else{
-              #cat('start to test_ini')
+              output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u), w[psi_l - 1,], as.matrix(X[psi_l - 1,,])), 
+                                     Napf, psi_final[psi_l:psi_u,], init = FALSE, jump_ini = TRUE)
+            }
+            
+          }else{
             output1 <- run_psi_APF(model, list(obs[psi_l:psi_u,], c(psi_l,psi_u),0,0), 
-                                   Napf, psi_final, init = FALSE)
-           
+                                   Napf, psi_final, init = FALSE, jump_last = TRUE)
           }
+          
          
-          X[psi_l:psi_u,,] <- output1[[1]][psi_l:psi_u,,]
-          w[psi_l:psi_u,] <- output1[[2]][psi_l:psi_u,]
-          #logZ <- output1[[3]] + logZ
-          ancestors[psi_l:psi_u,] <- output1[[4]][psi_l:psi_u,]
-        }
+          X[psi_l:psi_u,,] <- output1[[1]]
+          w[psi_l:psi_u,] <- output1[[2]]
+          logZ <- output1[[3]]+logZ
+          print(logZ)
+          
+          #if(psi_u != Time){
+           # w[psi_u,] <- w[psi_u,] - normalise_weights_in_log_space(w[psi_u,])[[2]]  #+ logZ
+          #ancestors[psi_l:psi_u,] <- output1[[4]][psi_l:psi_u,]
+          #}
         
-        
-        psi_l = max(psi_u - 1, 1)
+        psi_l = max(psi_u + 1, 1)
         
       }
       
@@ -134,7 +139,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
     
 
   }
-
+}
   return(list(X = X, w = w, logZ = logZ, psi_final = psi_final, X_apf = X_apf, w_apf = w_apf))
 }
 
