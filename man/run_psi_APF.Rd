@@ -4,7 +4,7 @@
 \alias{run_psi_APF}
 \title{Function of psi_APF}
 \usage{
-run_psi_APF(model, data, N, psi_pa, init, jump_ini = FALSE)
+run_psi_APF(model, data, N, psi_pa, init, jump_ini = FALSE, jump_last = FALSE)
 }
 \arguments{
 \item{model}{List containing model parameters}

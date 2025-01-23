@@ -3,10 +3,10 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 100
-#' lag = 50
+#' Napf = N = 500
+#' lag = 10
 #' Time = 100
-#' d_ = 5
+#' d_ = 70
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -50,17 +50,22 @@
 #'
 #' log_ratio <- vector()
 #' log_ratio_apf <- vector()
+#' avg <- matrix(nrow = 1, ncol = Time)
 #'
-#'for(i in 1:10){
+#'start_time <- Sys.time()
+#'for(i in 1:50){
 #' set.seed(i*2)
 #' output_apf <- run_bpf(model, data, lag, Napf)
 #' logZ <- output_apf[[3]]
 #' log_ratio_apf[i] <- compute_log_ratio(logZ, filtering)
 #' print(log_ratio_apf[i] )
 #'}
+#' end_time <- Sys.time()
+#' bpf_time <- end_time - start_time
 #'
+#'start_time <- Sys.time()
 #'for(i in 1:1){
-#'set.seed(i*2)
+#'set.seed(i+2)
 #' #run the algorithm
 #' output <- run_quasi_online_pf(model, data, Napf, N)
 #'
@@ -73,13 +78,18 @@
 #'
 #' log_ratio[i] <- compute_log_ratio(logZ, filtering)
 #' print(log_ratio[i] )
-#' #dist <- compute_dKS(X, w, smoothing)
+#' dist <- compute_dKS(X, w, smoothing)
 #'
-#' #plot(x = c(1:Time), y = avg[1,])
+#' for (t in 1:Time){
+#' avg[, t] <- length(unique(X[t,,,drop = FALSE]))/d_
 #' }
 #' 
+#' plot(x = c(1:Time), y = avg[1,])
+#' }
+#' end_time <- Sys.time()
+#' iapf_time <- end_time - start_time
 #' 
-#' specific_time = 55
+#' specific_time = 105
 #' 
 #' #update observations:
 #' 
@@ -91,7 +101,7 @@
 #' data$breaks <- output[[1]]
 #' #data$psi_index <- output[[2]]
 #' 
-#' previous_info <- list(previous_time = 50, 
+#' previous_info <- list(previous_time = 100, 
 #' X_pre = X_apf, w_pre = w_apf, psi_final = psi_final, X = X, w = w)
 #' output1 <- run_quasi_online_pf(model, data, Napf, N, previous_info)
 #' logZ <- output1[[3]]

@@ -120,9 +120,11 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
                                    Napf, psi_final, init = FALSE, jump_last = TRUE)
           }
           
-         
-          X[psi_l:psi_u,,] <- output1[[1]]
-          w[psi_l:psi_u,] <- output1[[2]]
+          if(is.null(previous_info)){
+            X[psi_l:psi_u,,] <- output1[[1]]
+            w[psi_l:psi_u,] <- output1[[2]]
+          }
+          
           logZ <- output1[[3]]+logZ
           print(logZ)
           

@@ -4,7 +4,7 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 32
+#' lag = 16
 #' Time = 944
 #' d_ = 1
 #'
@@ -51,22 +51,25 @@
 #'
 #'log_ratio <- vector()
 #'logZ <- vector()
-#'
+#'avg <- matrix(nrow = 1, ncol = Time)
 #'for(i in 1:1){
 #'set.seed(i^2)
-#' #run the algorithm
-#' output <- run_quasi_online_pf(model, data, lag, Napf, N)
-#' #output <- run_bpf(model, data, lag, Napf)
+#'#run the algorithm
+#' output <- run_quasi_online_pf(model, data, Napf, N)
+#'
 #' X<- output[[1]]
 #' w<- output[[2]]
 #' logZ[i] <- output[[3]]
-#' #avg <- output[[5]]
+#' psi_final <- output[[4]]
+#' X_apf <- output[[5]]
+#' w_apf <- output[[6]]
 #'
-#' #log_ratio[i] <- compute_log_ratio(logZ, filtering)
 #' print(logZ[i])
 #' #dist <- compute_dKS(X, w, smoothing)
-#'
-#' #plot(x = c(1:Time), y = avg[1,])
+#'for (t in 1:Time){
+#' avg[, t] <- length(unique(X[t,,,drop = FALSE]))/d_
+#' }
+#' plot(x = c(1:Time), y = avg[1,])
 #' }
 #' }
 
