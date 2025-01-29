@@ -191,41 +191,43 @@ run_psi_APF <- function(model, data, N, psi_pa, init, jump_ini = FALSE, jump_las
       }else{
         end = Time - 1
       }
-      
-      for(t in 2:end){
-        #print(t)
-     
-      if(compute_ESS_log(w[t-1,]) <= kappa*N){
-        re = re + 1
-        
-        ancestors[t,] <- resample(w[t-1,], mode = 'multi')
-        logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
-        resample_time <- c(resample_time, t-1)
-        #cat('logZ =', logZ, 're= ', t)
-        
-        for(i in 1:N){
-         
-          X[t,i,] <- sample_twisted_transition(X[t-1, ancestors[t,i],], model, psi_pa[t,], 1)
-          log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
-          w[t,i] <- eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
+      if(end >= 2){
+        for(t in 2:end){
+          #print(t)
+          
+          if(compute_ESS_log(w[t-1,]) <= kappa*N){
+            re = re + 1
+            
+            ancestors[t,] <- resample(w[t-1,], mode = 'multi')
+            logZ = logZ + normalise_weights_in_log_space(w[t-1,])[[2]]
+            resample_time <- c(resample_time, t-1)
+            #cat('logZ =', logZ, 're= ', t)
+            
+            for(i in 1:N){
+              
+              X[t,i,] <- sample_twisted_transition(X[t-1, ancestors[t,i],], model, psi_pa[t,], 1)
+              log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
+              w[t,i] <- eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
+              
+            }
+            
+            
+          }else{
+            
+            ancestors[t,] <- 1:N
+            for(i in 1:N){
+              
+              X[t,i,] <- sample_twisted_transition(X[t-1, i,], model, psi_pa[t,], 1)
+              
+              log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
+              
+              w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
+            }
+          }
           
         }
-        
-        
-      }else{
-       
-        ancestors[t,] <- 1:N
-        for(i in 1:N){
-
-          X[t,i,] <- sample_twisted_transition(X[t-1, i,], model, psi_pa[t,], 1)
-         
-          log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
-          
-          w[t,i] <- w[t-1,i] + eval_twisted_potential(model, list(NA, psi_pa[t+1,], psi_pa[t,]), X[t,i,], log_likelihoods[t,i])
-        }
       }
-      
-      }
+    
     }
   
  if(jump_last == FALSE){

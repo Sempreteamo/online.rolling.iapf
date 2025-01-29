@@ -3,10 +3,10 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 500
-#' lag = 10
+#' Napf = N = 100
+#' lag = 2
 #' Time = 100
-#' d_ = 70
+#' d_ = 2
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -21,8 +21,8 @@
 #' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
 #' obs_p <- list(obs_mean = obs_m, obs_cov = obs_c)
 #'
-#' output <- generate_blocks(lag, Time)
-#' #output <- generate_blocks_half(lag, Time)
+#' #output <- generate_blocks(lag, Time)
+#' output <- generate_blocks_half(lag, Time)
 #' breaks_ <- output[[1]]
 #' psi_index_ <- output[[2]]
 #'
