@@ -4,7 +4,7 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 16
+#' lag = 8
 #' Time = 944
 #' d_ = 1
 #'
@@ -28,9 +28,9 @@
 #'  parameters = parameters_, dist = 'lg')
 #'
 #' #obs_ <- sample_obs(model, Time, d_) #provided by users
-#' obs_ <- 100*as.matrix(read.csv('data.csv')[1][1:944,])
+#' obs_ <- 100*as.matrix(read.csv('R/data.csv')[1][1:944,])
 #'
-#' output <- generate_blocks(lag, length(obs_))
+#' output <- generate_blocks_half(lag, length(obs_))
 #' breaks_ <- output[[1]]
 #' psi_index_ <- output[[2]]
 #'
@@ -72,4 +72,5 @@
 #' plot(x = c(1:Time), y = avg[1,])
 #' }
 #' }
+
 

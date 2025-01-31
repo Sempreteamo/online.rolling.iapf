@@ -4,7 +4,7 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 100
-#' lag = 2
+#' lag = 10
 #' Time = 100
 #' d_ = 2
 #'
@@ -75,6 +75,7 @@
 #' psi_final <- output[[4]]
 #' X_apf <- output[[5]]
 #' w_apf <- output[[6]]
+#' ancestors <- output[[7]]
 #'
 #' log_ratio[i] <- compute_log_ratio(logZ, filtering)
 #' print(log_ratio[i] )
