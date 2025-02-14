@@ -36,12 +36,12 @@ run_iAPF <- function(model, data, Napf){
 
   if(b_e == breaks[[index]][1]){
   
-    output <- run_psi_APF(model, list(obs[1:b_e,],
+    output <- run_psi_APF(model, list(obs[1:b_e,, drop = FALSE],
                                       1: b_e, 0, as.matrix(0)), N[l], psi_pa = 0, init = TRUE) #high d pass
   
   }else{
    
-    output <- run_psi_APF(model, list(obs[b_s:b_e,],
+    output <- run_psi_APF(model, list(obs[b_s:b_e,, drop = FALSE],
                                       b_s:b_e, 
                                       w_apf_record, 
                                       as.matrix(X_apf_record)), N[l],
@@ -63,7 +63,7 @@ run_iAPF <- function(model, data, Napf){
       #APF outputs filtering X_apf for the next psi, and smoothing X_apf_s
       #for the final calculation
       
-      output <- run_psi_APF(model, list(obs[b_s:b_e,],
+      output <- run_psi_APF(model, list(obs[b_s:b_e,, drop = FALSE],
                                         b_s: b_e, w_apf[nrow(w_apf),], as.matrix(X_apf[nrow(X_apf),,])),
                             N[l], psi_pa, init = FALSE)
       X_apf <- output[[1]]
@@ -80,7 +80,7 @@ run_iAPF <- function(model, data, Napf){
     if(l <= k ){
       
       #receive filtering particles X_apf for psi
-      psi_pa <- learn_psi(X_apf, obs[b_s:b_e,],
+      psi_pa <- learn_psi(X_apf, obs[b_s:b_e,, drop = FALSE],
                           model, log_likelihoods)
       
       if(l > k & N[max(l-k,1)] == N[l] & is.unsorted(Z_apf[max(l-k,1):l])){

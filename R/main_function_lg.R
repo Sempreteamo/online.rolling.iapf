@@ -4,9 +4,9 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 100
-#' lag = 10
-#' Time = 100
-#' d_ = 2
+#' lag = 5
+#' Time = 10
+#' d_ = 1
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -43,7 +43,7 @@
 #' filtering <- filter[[1]]
 #' smoothing <- filter[[2]]
 #'
-#' data <- list(obs = obs_, breaks = breaks_, 
+#'data_ =  data <- list(obs = obs_, breaks = breaks_, 
 #' psi_index = psi_index_)
 #'
 #' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users

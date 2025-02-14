@@ -124,6 +124,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
           if(is.null(previous_info)){
             X[psi_l:psi_u,,] <- output1[[1]]
             w[psi_l:psi_u,] <- output1[[2]]
+            ancestors[psi_l:psi_u,] <- output1[[4]]
           }
           
           logZ <- output1[[3]]+logZ
@@ -143,7 +144,7 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
 
   }
 }
-  return(list(X = X, w = w, logZ = logZ, psi_final = psi_final, X_apf = X_apf, w_apf = w_apf))
+  return(list(X = X, w = w, logZ = logZ, psi_final = psi_final, X_apf = X_apf, w_apf = w_apf, ancestors = ancestors))
 }
 
 
