@@ -3,10 +3,10 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 100
-#' lag = 5
-#' Time = 10
-#' d_ = 1
+#' Napf = N = 200
+#' lag = 100
+#' Time = 100
+#' d_ = 3
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -21,8 +21,8 @@
 #' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
 #' obs_p <- list(obs_mean = obs_m, obs_cov = obs_c)
 #'
-#' #output <- generate_blocks(lag, Time)
-#' output <- generate_blocks_half(lag, Time)
+#' output <- generate_blocks(lag, Time)
+#' #output <- generate_blocks_half(lag, Time)
 #' breaks_ <- output[[1]]
 #' psi_index_ <- output[[2]]
 #'
@@ -43,14 +43,49 @@
 #' filtering <- filter[[1]]
 #' smoothing <- filter[[2]]
 #'
-#'data_ =  data <- list(obs = obs_, breaks = breaks_, 
-#' psi_index = psi_index_)
+#'#data_ =  data <- list(obs = obs_)
+#'data <- list(obs = obs_, breaks = breaks_, 
+#'psi_index = psi_index_)
 #'
-#' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users
 #'
 #' log_ratio <- vector()
+#' log_ratio_rolling <- vector()
 #' log_ratio_apf <- vector()
 #' avg <- matrix(nrow = 1, ncol = Time)
+#' filtering_estimates <- 0
+#' 
+#' num_runs <- 10
+#' logZ_matrix <- matrix(NA, nrow = num_runs, ncol = Time)
+#' 
+#' for(i in 1:num_runs){
+#' set.seed(i*2)
+#' output <- Orc_SMC(lag, data, model, N)
+#' logZ_matrix[i, ] <- output$logZ
+#' filtering_estimates <- output$f_means
+#' log_ratio_rolling[i] <- compute_log_ratio(logZ[Time], filtering)
+#' print(log_ratio_rolling[i] )
+#' }
+#' 
+#' 
+#' log_ratio_rolling_vec <- matrix(NA, nrow = num_runs, ncol = Time)
+#' for(n in 1:num_runs){
+#' for(i in 1:Time){
+#' filter <- compute_fkf_filtering(params, obs_[1:i,, drop = FALSE])
+#' filtering <- filter[[1]]
+#' log_ratio_rolling_vec[n, i] <- compute_log_ratio(logZ_matrix[n, i], filtering)
+#' }
+#' }
+#' 
+#' 
+#' smoothing <- filter[[2]]
+#'
+#'for(i in 1:50){
+#' set.seed(i*2)
+#' output_apf <- run_bpf(model, data, lag, Napf)
+#' logZ <- output_apf[[3]]
+#' log_ratio_apf[i] <- compute_log_ratio(logZ, filtering)
+#' print(log_ratio_apf[i] )
+#'}
 #'
 #'start_time <- Sys.time()
 #'for(i in 1:50){
