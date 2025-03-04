@@ -62,7 +62,7 @@
 #' output <- Orc_SMC(lag, data, model, N)
 #' logZ_matrix[i, ] <- output$logZ
 #' filtering_estimates <- output$f_means
-#' log_ratio_rolling[i] <- compute_log_ratio(logZ[Time], filtering)
+#' log_ratio_rolling[i] <- compute_log_ratio(logZ_matrix[i,Time], filtering)
 #' print(log_ratio_rolling[i] )
 #' }
 #' 
