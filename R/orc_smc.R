@@ -1,3 +1,14 @@
+#' Rolling window function
+#'
+#' 
+#'
+#' @param lag 
+#' @param data 
+#' @param model 
+#' @param N
+#'
+#' @return A matrix of observations with dimensions Time x d.
+#' @export
 Orc_SMC <- function(lag, data, model, N) {
   obs <- data$obs
   Time <- nrow(obs)

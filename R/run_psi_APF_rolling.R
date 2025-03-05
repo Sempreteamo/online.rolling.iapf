@@ -3,109 +3,92 @@
 #' This function performs sampling and resampling procedures of
 #' psi-Auxiliary Particle Filter with $/kappa$-adaptive resampling
 #'
-#' @param model List containing model parameters
+#' @param t time
 #' @param data List containing required data information on which to run the filter
-#' @param N Number of particles to use
+#' @param H_prev previous information
 #' @param psi_pa Parameters of the twisting function
 #' @param init Index to decide whether the algorithm is at its initialized block
-#' @param jump_ini Index to decide whether the algorithm is at the middle stage of the psi-APF
+#' @param model A list containing information of model
 #'
 #' @return A list containing:
-#' X is the particle set generated during the sampling and resampling approach
-#' w is the weights of particles
-#' logZ is normalizing constant estimate
-#' ancestors is indices associated with every resampling event
-#' log_likelihoods is the log likelihoods for each particle X given likelihood function
+#' 
 #'
 #' @export
 #'
-run_psi_APF_rolling <- function(model, data, N, psi_pa, init){
+run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
+  
+  # Extract previous values
+  obs <- data$obs
+  X_prev <- H_prev$X
+  logW_prev <- H_prev$logW
+  #logZ_prev <- H_prev$logZ
+  logZ_t = 0
+  kappa <- model$parameters$kappa
+  N <- length(logW_prev)  # Number of particles
+  
   ini_mu <- model$ini_mu
-  ini_cov <- model$ini_cov
+  
   A <- model$tran_mu
   B <- model$tran_cov
   obs_params <- model$obs_params
-  re = 0
+  d <- ncol(A)
   
-  obs <- as.matrix(data[[1]])
-  run_block <- data[[2]]
-  b_s <- run_block[1]
-  b_e <- run_block[2]
+  X_new <- matrix(NA, N, d)
   
-  X_init <- data[[3]]
-  w_init <- data[[4]]
+  # Step 1: Compute v^n in log domain
+  log_psi_tilde <- vector()
+  for(i in 1:N){
+    log_psi_tilde[i] <-  evaluate_psi_tilde(X_prev[i,], psi_pa[t,], model)
+  }
   
-  Time <- nrow(obs)
-  d = nrow(as.matrix(A))
-  kappa <- model$parameters$kappa
-  ancestors <- matrix(NA, Time, N)
-  resample_time <- vector()
+  log_v <- logW_prev + log_psi_tilde  # log(W_t-1) + log(f_t)
   
-  X <- array(NA, dim = c(Time, N, d))
-  w <- matrix(NA, Time, N)
-  logZ <- 0
-  log_likelihoods <- matrix(NA, Time, N)
   
-  avg <- matrix(nrow = 1, ncol = Time)
-  #init controls the the condition where we conduct the initialization
-
+  # Step 2: Compute logZ_t and normalized logV
+  logZ_t <- logZ_t + log_sum_exp(log_v)
+  logV <- log_v - log_sum_exp(log_v)
   
-  #initialization with standard distribution
-  if(init == TRUE){
-    for(t in 1:Time){
-      ancestors[t,] <- 1:N
-      
-      for(i in 1:N){
-        X[t,i,] <-  mvnfast::rmvn(1, ini_mu + A%*%(X_init[i,drop = FALSE] - ini_mu), B)
-        #mvnfast::rmvn(1, A%*%X[t-1, i,], B)
-        log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], obs[t,, drop = FALSE], obs_params)
-      }
-      w[t,] <- log_likelihoods[t,]
+  # Step 3: Compute ESS and resample if necessary
+  ESS <- exp(-log_sum_exp(2 * logV))
+  
+  if (ESS < kappa * N) {
+    ancestors <- resample_particles(logV)
+    logV <- rep(-log(N), N)  # Reset logV after resampling
+    #add = rep(0, N) #??
+  } else {
+    ancestors <- 1:N  # No resampling needed
+    #add = logW_prev #??
+  }
+  
+  # Step 4: Sample new states using f_t^ψ
+  log_likelihoods <- vector()
+  log_g <- vector()
+  log_psi_t <- vector()
+  
+  for(i in 1:N){
+    if(init == TRUE){
+      X_new[i,] <- mvnfast::rmvn(1, ini_mu + A%*%(X_prev[ancestors[i],] - ini_mu), B)
+    }else{
+      X_new[i,] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_pa[t,], 1)
     }
-  }
-  #loglikelihoods only has 1 row 
-  
-  #twisted distribution for t = 1#
-  if(init != TRUE){
-    index = 1
-    for(t in b_s:b_e){
-      if(t == b_s){
-        w_t = w_init
-      }else{
-        w_t = w[index - 1,]
-      }
-      
-      if(compute_ESS_log(w_t) <= kappa*N){
-        #re = re + 1
-        ancestors[index,] <- resample(w_t)
-        logZ = logZ + normalise_weights_in_log_space(w_t)[[2]]
-        add = rep(0, N)
-      }else{
-        ancestors[index,] <- 1:N
-        add = w_t
-      }
-      
-      for(i in 1:N){
-        #filtering particles
-        X[index,i,] <- sample_twisted_transition(X_init[ancestors[index,i], drop = FALSE], model, psi_pa[t,], 1)
-        log_likelihoods[index,i] <- model$eval_likelihood(X[index,i,], obs[index,, drop = FALSE], obs_params)
-        
-        w[index,i] <- add[i] + eval_twisted_potential(model, list(NA, psi_pa[t,], psi_pa[t,]), X[index,i,], log_likelihoods[index,i])
-        
-      }
-      index = index + 1
-    }
-
+    
+    log_likelihoods[i] <- model$eval_likelihood(X_new[i,], 
+                                                obs[t,, drop = FALSE], obs_params)
+    log_psi_t[i] <- evaluate_psi(X_new[i,], psi_pa[t,])
   }
   
+  log_g <- log_likelihoods #+ add 
   
+  # Step 5: Compute log w_t
+  log_w <- logV + log_g - log_psi_t  # log(V_t) + log(g) - log(ψ_t)
   
-  for (t in 1:Time){
-    avg[, t] <- length(unique(X[t,,,drop = FALSE]))/d
-  }
+  # Step 6: Compute log Z_t and normalize weights
+  logZ_t <- logZ_t + log_sum_exp(log_w)
+  logW <- log_w - log_sum_exp(log_w)  # Self-normalized log weights
   
-  
-  return(list(X, w, logZ, ancestors, log_likelihoods,  normalise_weights_in_log_space(w[Time,])[[2]]))
+  # Return updated particle system
+  return(list(X = X_new, logW = logW, logZ = logZ_t, log_likelihoods = log_likelihoods))
 }
+
 #' @import mvnfast
-#' @import stats
+

@@ -4,9 +4,9 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 100
-#' Time = 100
-#' d_ = 3
+#' lag = 200
+#' Time = 200
+#' d_ = 5
 #'
 #' alpha = 0.42
 #' tran_m <- matrix(nrow = d_, ncol = d_)
@@ -50,20 +50,31 @@
 #'
 #' log_ratio <- vector()
 #' log_ratio_rolling <- vector()
+#' log_ratio_iapf <- vector()
 #' log_ratio_apf <- vector()
 #' avg <- matrix(nrow = 1, ncol = Time)
 #' filtering_estimates <- 0
 #' 
 #' num_runs <- 10
-#' logZ_matrix <- matrix(NA, nrow = num_runs, ncol = Time)
+#' logZ_matrix_rolling <- matrix(NA, nrow = num_runs, ncol = Time)
 #' 
 #' for(i in 1:num_runs){
 #' set.seed(i*2)
 #' output <- Orc_SMC(lag, data, model, N)
-#' logZ_matrix[i, ] <- output$logZ
+#' logZ_matrix_rolling[i, ] <- output$logZ
 #' filtering_estimates <- output$f_means
-#' log_ratio_rolling[i] <- compute_log_ratio(logZ_matrix[i,Time], filtering)
+#' log_ratio_rolling[i] <- compute_log_ratio(logZ_matrix_rolling[i,Time], filtering)
 #' print(log_ratio_rolling[i] )
+#' }
+#' 
+#' logZ_matrix_iapf <- matrix(NA, nrow = num_runs, ncol = Time)
+#' for(i in 1:num_runs){
+#' set.seed(i*2)
+#' output <- iAPF(data, Napf, model)
+#' logZ_matrix_iapf[i, ] <- output
+#' #filtering_estimates <- output$f_means
+#' log_ratio_iapf[i] <- compute_log_ratio(logZ_matrix_iapf[i,Time], filtering)
+#' print(log_ratio_iapf[i] )
 #' }
 #' 
 #' 
