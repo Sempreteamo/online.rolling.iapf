@@ -38,7 +38,7 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   # Step 1: Compute v^n in log domain
   log_psi_tilde <- vector()
   for(i in 1:N){
-    log_psi_tilde[i] <-  evaluate_psi_tilde(X_prev[i,], psi_pa[t,], model)
+    log_psi_tilde[i] <-  evaluate_psi_tilde(X_prev[i,, drop = FALSE], psi_pa[t,], model)
   }
   
   log_v <- logW_prev + log_psi_tilde  # log(W_t-1) + log(f_t)
@@ -91,4 +91,3 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
 }
 
 #' @import mvnfast
-

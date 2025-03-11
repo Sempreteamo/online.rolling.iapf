@@ -3,22 +3,26 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 200
-#' lag = 200
-#' Time = 200
-#' d_ = 5
+#' Napf = N = 1000
+#' lag = 10
+#' Time = 100
+#' d_ = 10
 #'
-#' alpha = 0.42
-#' tran_m <- matrix(nrow = d_, ncol = d_)
-#' for (i in 1:d_){
-#'   for (j in 1:d_){
-#'       tran_m[i,j] = alpha^(abs(i-j) + 1)
-#'   }
-#' }
+#' #alpha = 0.42
+#' #tran_m <- matrix(nrow = d_, ncol = d_)
+#' #for (i in 1:d_){
+#'  # for (j in 1:d_){
+#'   #    tran_m[i,j] = alpha^(abs(i-j) + 1)
+#'   #}
+#' #}
 #' ini <- rep(0, d_)
-#'
-#' ini_c = tran_c = obs_m = obs_c = diag(1, nrow = d_, ncol = d_)
-#' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
+#' 
+#' tran_m = diag(1, nrow = d_, ncol = d_)
+#' tran_c = diag(1/10, nrow = d_, ncol = d_)
+#' ini_c = diag(1, nrow = d_, ncol = d_)
+#' obs_m = diag(1, nrow = d_, ncol = d_)
+#' obs_c = diag(1/2, nrow = d_, ncol = d_)
+#' parameters_ <- list(k = 7, tau = 0.5, kappa = 0.5)
 #' obs_p <- list(obs_mean = obs_m, obs_cov = obs_c)
 #'
 #' output <- generate_blocks(lag, Time)
@@ -31,11 +35,16 @@
 #'  parameters = parameters_, dist = 'lg')
 #'
 #' obs_ <- sample_obs(model, Time, d_) #provided by users
+#' #obs_ <- as.matrix(read.csv('C:/Users/ip21972/Downloads/quasi.online.iAPF.package-main/quasi.online.iAPF.package-main/try_data.csv'))
+#'
+#'a0_ = ini     # Initial state mean
+#'P0_ = ini_c    # Initial state covariance
+#'Zt_ = obs_m    # Observation matrix (C)
+#'Ht_ = tran_c    # Observation noise covariance (R)
+#'Gt_ = obs_c   # Process noise covariance (Q)
 #'
 #' dt_ <- ct_ <- matrix(0, d_, 1)
 #' Tt_ <- as.matrix(tran_m)
-#' P0_ <- Zt_ <- Ht_ <- Gt_ <- diag(1, d_, d_)
-#' a0_ <- rep(0, d_)
 #' params <- list(dt = dt_, ct = ct_, Tt = Tt_, P0 = P0_, Zt = Zt_,
 #'                Ht = Ht_, Gt = Gt_, a0 = a0_, d = d_)
 #'
@@ -55,7 +64,7 @@
 #' avg <- matrix(nrow = 1, ncol = Time)
 #' filtering_estimates <- 0
 #' 
-#' num_runs <- 10
+#' num_runs <- 1
 #' logZ_matrix_rolling <- matrix(NA, nrow = num_runs, ncol = Time)
 #' 
 #' for(i in 1:num_runs){
@@ -69,7 +78,7 @@
 #' 
 #' logZ_matrix_iapf <- matrix(NA, nrow = num_runs, ncol = Time)
 #' for(i in 1:num_runs){
-#' set.seed(i*2)
+#' set.seed(i)
 #' output <- iAPF(data, Napf, model)
 #' logZ_matrix_iapf[i, ] <- output
 #' #filtering_estimates <- output$f_means
@@ -83,7 +92,7 @@
 #' for(i in 1:Time){
 #' filter <- compute_fkf_filtering(params, obs_[1:i,, drop = FALSE])
 #' filtering <- filter[[1]]
-#' log_ratio_rolling_vec[n, i] <- compute_log_ratio(logZ_matrix[n, i], filtering)
+#' log_ratio_rolling_vec[n, i] <- compute_log_ratio(logZ_matrix_rolling[n, i], filtering)
 #' }
 #' }
 #' 

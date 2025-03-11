@@ -11,7 +11,8 @@
 sample_obs <- function(model, Time, d){
     ini <- model$ini_mu
     ini_c <- model$ini_cov
-    tran_mu <- rep(as.matrix(model$tran_mu)[1,1], d)
+    tran_mu <- model$tran_mu
+    #rep(as.matrix(model$tran_mu)[1,1], d)
     tran_cov <- model$tran_c
 
     X <- matrix(0, nrow = Time, ncol = d)
@@ -20,7 +21,8 @@ sample_obs <- function(model, Time, d){
     X[1,] <- mvnfast::rmvn(1, ini, ini_c)
 
     for(t in 2:Time){
-      X[t,] <- stats::rnorm(d, ini + tran_mu*(X[t-1,] - ini), sqrt(as.matrix(tran_cov)[1,1]))
+      X[t,] <- mvnfast::rmvn(1, tran_mu%*%X[t-1,], tran_cov)
+        #stats::rnorm(d, ini + tran_mu*(X[t-1,] - ini), sqrt(as.matrix(tran_cov)[1,1]))
     }
 
     for(t in 1:Time){

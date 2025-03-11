@@ -48,7 +48,26 @@
 #' data <- list(obs = obs_, breaks = breaks_, psi_index = psi_index_)
 #'
 #' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users
-#'
+#'log_ratio <- vector()
+#' log_ratio_rolling <- vector()
+#' log_ratio_iapf <- vector()
+#' log_ratio_apf <- vector()
+#' avg <- matrix(nrow = 1, ncol = Time)
+#' filtering_estimates <- 0
+#' 
+#' num_runs <- 1
+#' logZ_matrix_rolling <- matrix(NA, nrow = num_runs, ncol = Time)
+#' 
+#' for(i in 1:num_runs){
+#' set.seed(i*2)
+#' output <- Orc_SMC(lag, data, model, N)
+#' logZ_matrix_rolling[i, ] <- output$logZ
+#' filtering_estimates <- output$f_means
+#' log_ratio_rolling[i] <- compute_log_ratio(logZ_matrix_rolling[i,Time], filtering)
+#' print(log_ratio_rolling[i] )
+#' }
+#' 
+#' 
 #'log_ratio <- vector()
 #'logZ <- vector()
 #'avg <- matrix(nrow = 1, ncol = Time)

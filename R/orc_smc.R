@@ -39,7 +39,7 @@ Orc_SMC <- function(lag, data, model, N) {
   psi_pa <- matrix(NA, Time, 2*d)
   #H[[0]] <- list(X = matrix(0, nrow = d, ncol = N), W = rep(1/N, N), Z = 1)
   #H_tilde[[0]] <- H[[0]]
-
+  
   # Main loop for t = 1, ..., T
   for (t in 1:Time) {
     t0 <- max(t - lag + 1, 1)
@@ -98,7 +98,7 @@ Orc_SMC <- function(lag, data, model, N) {
       #}
       
     }
-   
+    
     # Step 5: Store results
     if (t == Time) {
       if(t - lag + 1 == 1){
@@ -125,10 +125,10 @@ Orc_SMC <- function(lag, data, model, N) {
         
         W_t <- normalise_weights_in_log_space(log_W[s,])[[1]] 
         filtering_estimates[s,] <- colSums(W_t * X[s,,])
-        }
+      }
       
-     
-    
+      
+      
     } else if (t > lag - 1) {
       
       if(t - lag + 1 == 1){
@@ -156,4 +156,3 @@ Orc_SMC <- function(lag, data, model, N) {
   
   return(list(logZ = logZ_vec, f_means = filtering_estimates))  
 }
-

@@ -11,12 +11,14 @@
 #' @export
 #'
 evaluate_psi_tilde <- function(x, psi_pa, model){
+
+
   d <- length(x)
   A <- model$tran_mu
   B <- model$tran_cov
   ini <- model$ini_mu
 
-  dif <- as.vector(ini + A%*%(x - ini) - psi_pa[1:d])
+  dif <- as.vector(ini + A%*%(t(x - ini)) - psi_pa[1:d])
 
   full_covariance <- diag(psi_pa[(d + 1):(d + d)], nrow=d, ncol=d) + B
 
