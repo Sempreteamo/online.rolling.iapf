@@ -26,6 +26,7 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   kappa <- model$parameters$kappa
   N <- length(logW_prev)  # Number of particles
   
+  ini <-model$ini
   ini_mu <- model$ini_mu
   
   A <- model$tran_mu
