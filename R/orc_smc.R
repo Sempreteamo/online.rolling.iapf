@@ -25,7 +25,7 @@ Orc_SMC <- function(lag, data, model, N) {
   # Initial state: X is a (d x N) matrix, W is a vector, Z is scalar
   X0 = matrix(0, nrow = N, ncol = d)
   w0 = matrix(log(1/N), 1, N)
-  #logZ = 0 
+  logZ <- numeric(Time) 
   logZ_vec <- numeric(Time)
   
   #the size of the data can be changed
@@ -100,56 +100,20 @@ Orc_SMC <- function(lag, data, model, N) {
     }
     
     # Step 5: Store results
-    if (t == Time) {
-      if(t - lag + 1 == 1){
-        H_prev <- list(X = X0, logW = w0)
-      }else{
-        H_prev <- list(X = X[t - lag,,], logW = log_W[t - lag,])
-      }
-      
-      for(s in  t0:t){
-        if(s == 1){
-          H_prev <- list(X = X0, logW = w0)
-        }else{
-          H_prev <- list(X = X[s - 1,,], logW = log_W[s - 1,])
-        }
-        
-        output <- run_psi_APF_rolling(data, s, psi_pa, H_prev, model, init = FALSE)
-        X[s,,] <- output$X
-        log_W[s,] <- output$logW
-        
-        #logZ <- output$logZ + logZ
-        logZ_vec[s] <- if (s > 1) logZ_vec[s - 1] + output$logZ else output$logZ
-        #logZ <- logZ + normalise_weights_in_log_space(w[Time,])[[2]] 
-        #print(logZ)
-        
-        W_t <- normalise_weights_in_log_space(log_W[s,])[[1]] 
-        filtering_estimates[s,] <- colSums(W_t * X[s,,])
-      }
-      
-      
-      
-    } else if (t > lag - 1) {
-      
-      if(t - lag + 1 == 1){
-        H_prev <- list(X = X0, logW = w0)
-      }else{
-        H_prev <- list(X = X[t - lag,,], logW = log_W[t - lag,])
-      }
-      
-      output <- run_psi_APF_rolling(data, t - lag + 1, psi_pa, H_prev, model, init = FALSE)
-      X[t - lag + 1,,] <- output$X
-      log_W[t - lag + 1,] <- output$logW
-      
-      #logZ <- output$logZ + logZ
-      logZ_vec[t - lag + 1] <- if ((t - lag + 1) > 1) logZ_vec[t - lag] + output$logZ else output$logZ
-      #print(logZ_vec)
-      #log_likelihoods[t,] <- output[[5]]
-      W_t <- normalise_weights_in_log_space(log_W[t - lag + 1,])[[1]] 
-      filtering_estimates[t - lag + 1,] <- colSums(W_t * X[t - lag + 1,,])
+    H_prev <- if (t0 == 1) list(X = X0, logW = w0) else list(X = X[t0 - 1,, ], logW = log_W[t0 - 1,])
+    
+    for (s in t0:t) {
+      output <- run_psi_APF_rolling(data, s, psi_pa, H_prev, model, init = FALSE)
+      X[s,,] <- output$X
+      log_W[s,] <- output$logW
+      logZ <- output$logZ
+        #logZ_vec[s] <- if (s == 1) output$logZ else logZ_vec[s - 1] + output$logZ
+      W_t <- normalise_weights_in_log_space(log_W[s,])[[1]]
+      filtering_estimates[s,] <- colSums(W_t * X[s,,])
+      H_prev <- list(X = X[s,, ], logW = log_W[s,])
     }
     
-    
+    logZ_vec[t] <- if (t == 1) output$logZ else logZ_vec[t - 1] + output$logZ
   }
   
   
