@@ -53,7 +53,7 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   ESS <- exp(-log_sum_exp(2 * logV))
   
   if (ESS < kappa * N) {
-    ancestors <- resample_particles(logV)
+    ancestors <- resample(logV)
     logV <- rep(-log(N), N)  # Reset logV after resampling
     #add = rep(0, N) #??
   } else {
@@ -66,17 +66,24 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   log_g <- vector()
   log_psi_t <- vector()
   
+  
   for(i in 1:N){
-    if(init == TRUE){
-      X_new[i,] <- mvnfast::rmvn(1, ini_mu + A%*%(X_prev[ancestors[i],] - ini_mu), B)
-    }else{
+    if(init == TRUE && t == 1){
+      
+      X_new[i,] <- mvnfast::rmvn(1, ini_mu, model$ini_cov)
+    } else if(init == TRUE) {
+      
+      X_new[i,] <- mvnfast::rmvn(1, ini_mu + A %*% (X_prev[ancestors[i],] - ini_mu), B)
+    } else {
+      
       X_new[i,] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_pa[t,], 1)
     }
     
-    log_likelihoods[i] <- model$eval_likelihood(X_new[i,], 
-                                                obs[t,, drop = FALSE], obs_params)
+    log_likelihoods[i] <- model$eval_likelihood(X_new[i,], obs[t,, drop = FALSE], obs_params)
     log_psi_t[i] <- evaluate_psi(X_new[i,], psi_pa[t,])
   }
+  
+  
   
   log_g <- log_likelihoods #+ add 
   
@@ -90,5 +97,6 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   # Return updated particle system
   return(list(X = X_new, logW = logW, logZ = logZ_t, log_likelihoods = log_likelihoods))
 }
+
 
 #' @import mvnfast
