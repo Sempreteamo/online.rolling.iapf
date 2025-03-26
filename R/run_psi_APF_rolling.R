@@ -21,8 +21,9 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   obs <- data$obs
   X_prev <- H_prev$X
   logW_prev <- H_prev$logW
+  logZ_t <- H_prev$logZ
   #logZ_prev <- H_prev$logZ
-  logZ_t = 0
+  #logZ_t = 0
   kappa <- model$parameters$kappa
   N <- length(logW_prev)  # Number of particles
   
@@ -37,7 +38,7 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   X_new <- matrix(NA, N, d)
   
   # Step 1: Compute v^n in log domain
-  log_psi_tilde <- vector()
+  log_psi_tilde <- rep(NA, N)
   for(i in 1:N){
     log_psi_tilde[i] <-  evaluate_psi_tilde(X_prev[i,, drop = FALSE], psi_pa[t,], model)
   }
@@ -53,7 +54,8 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   ESS <- exp(-log_sum_exp(2 * logV))
   
   if (ESS < kappa * N) {
-    ancestors <- resample(logV)
+    ancestors <- resample_particles(logV)
+    cat('re at ', t)
     logV <- rep(-log(N), N)  # Reset logV after resampling
     #add = rep(0, N) #??
   } else {
@@ -62,9 +64,9 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   }
   
   # Step 4: Sample new states using f_t^ψ
-  log_likelihoods <- vector()
-  log_g <- vector()
-  log_psi_t <- vector()
+  log_likelihoods <- rep(NA, N)
+  log_g <- rep(NA, N)
+  log_psi_t <- rep(NA, N)
   
   
   for(i in 1:N){
