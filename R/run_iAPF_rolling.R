@@ -72,19 +72,19 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   
   for(i in 1:N){
     if (init == TRUE && t == 1) {
-      # Case 1: Initialisation step at time t = 1
+      
       X_new[i, ] <- mvnfast::rmvn(1, ini_mu, model$ini_cov)
       
     } else if (init == TRUE && t != 1) {
-      # Case 2: Initialisation at time t > 1
+      
       X_new[i, ] <- mvnfast::rmvn(1, ini_mu + A %*% (X_prev[ancestors[i], ] - ini_mu), B)
       
     } else if (init == FALSE && t == 1) {
-      # Case 3: Non-initialisation but t = 1 (should rarely happen)
+     
       X_new[i, ] <- sample_twisted_initial(list(mean = ini_mu, cov = as.matrix(ini_cov)[1,1]), psi_pa[t,], 1)
       
     } else {
-      # Case 4: Non-initialisation and t > 1 (normal online step)
+    
       X_new[i, ] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_pa[t, ], 1)
     }
     
