@@ -38,9 +38,9 @@ Orc_SMC <- function(lag, data, model, N) {
     
     # Step 3: Init pass with psi ≡ 1
     if (t == 1) {
-      H_prev <- list(X = X0, logW = w0)
+      H_prev <- list(X = X0, logW = w0, logZ = 0)
     } else {
-      H_prev <- list(X = X_apf[t-1,,], logW = log_W_apf[t-1,])
+      H_prev <- list(X = X_apf[t-1,,], logW = log_W_apf[t-1,], logZ = 0)
     }
     
     output <- run_psi_APF_rolling(data, t, psi_pa, H_prev, model, init = TRUE)
@@ -87,7 +87,7 @@ Orc_SMC <- function(lag, data, model, N) {
       H_prev <- list(X = X[s,,], logW = log_W[s,], logZ = logZ_s)
     }
     
-    logZ_vec[t] <- if (t0 == 1) logZ_s  else logZ_vec[t0 - 1] + logZ_s
+    logZ_vec[t] <- if (t0 == 1) logZ_t  else logZ_s + logZ_vec[t0 - 1] 
   }
   
   return(list(logZ = logZ_vec, f_means = filtering_estimates))
