@@ -53,27 +53,30 @@ Orc_SMC <- function(lag, data, model, N) {
       psi_pa[t0:t,] <- learn_psi(X_apf[t0:t,,, drop = FALSE], obs[t0:t,, drop = FALSE],
                                  model, log_likelihoods_apf[t0:t,, drop = FALSE])
       
+      logZ_t = 0
       for (s in t0:t) {
         if (s == 1) {
-          H_prev <- list(X = X0, logW = w0)
+          H_prev <- list(X = X0, logW = w0, logZ = 0)
         } else {
-          H_prev <- list(X = X_apf[s - 1,,], logW = log_W_apf[s - 1,])
+          H_prev <- list(X = X_apf[s - 1,,], logW = log_W_apf[s - 1,], logZ = logZ_t)
         }
         
         output <- run_psi_APF_rolling(data, s, psi_pa, H_prev, model, init = FALSE)
         X_apf[s,,] <- output$X
         log_W_apf[s,] <- output$logW
         log_likelihoods_apf[s,] <- output$log_likelihoods
+        logZ_t <- output$logZ
       }
     }
     
     # Step 5: Final pass to get filtering distributions + logZ
     H_prev <- if (t0 == 1) list(X = X0, logW = w0, logZ = 0) else list(X 
-                = X[t0 - 1,, ], logW = log_W[t0 - 1,], logZ = logZ_vec[t0 - 1])
+                    = X[t0 - 1,, ], logW = log_W[t0 - 1,], logZ = 0)
     
+    logZ_s = 0
     
     for (s in t0:t) {
-  
+      
       output <- run_psi_APF_rolling(data, s, psi_pa, H_prev, model, init = FALSE)
       X[s,,] <- output$X
       log_W[s,] <- output$logW
@@ -84,7 +87,7 @@ Orc_SMC <- function(lag, data, model, N) {
       H_prev <- list(X = X[s,,], logW = log_W[s,], logZ = logZ_s)
     }
     
-    logZ_vec[t] <- logZ_s
+    logZ_vec[t] <- if (t0 == 1) logZ_s  else logZ_vec[t0 - 1] + logZ_s
   }
   
   return(list(logZ = logZ_vec, f_means = filtering_estimates))
