@@ -23,6 +23,7 @@ Orc_SMC <- function(lag, data, model, N) {
   w0 <- matrix(log(1/N), 1, N)
   
   logZ_vec <- numeric(Time)
+  logZ_tilde <- numeric(Time)
   logZ_s  <- 0
   
   X <- X_apf <- array(NA, c(Time, N, d))
@@ -32,62 +33,54 @@ Orc_SMC <- function(lag, data, model, N) {
   
   psi_pa <- matrix(NA, Time, 2*d)
   
+  H <- vector('list', Time + 1)
+  H_tilde <- vector('list', Time + 1)
+  
+  H[[1]] <- list(X = X0, logW = w0, logZ = 0)
+  H_tilde[[1]] <- list(X = X0, logW = w0, logZ = 0)
+  
   for (t in 1:Time) {
     print(t)
     t0 <- max(t - lag + 1, 1)
     
     # Step 3: Init pass with psi ≡ 1
-    if (t == 1) {
-      H_prev <- list(X = X0, logW = w0, logZ = 0)
-    } else {
-      H_prev <- list(X = X_apf[t-1,,], logW = log_W_apf[t-1,], logZ = 0)
-    }
     
-    output <- run_psi_APF_rolling(data, t, psi_pa, H_prev, model, init = TRUE)
-    X_apf[t,,] <- output$X
-    log_W_apf[t,] <- output$logW
+    output <- run_psi_APF_rolling(data, t, psi_pa, H_tilde[[t]] , model, init = TRUE)
+    H_tilde[[t+1]] <- output$H
     log_likelihoods_apf[t,] <- output$log_likelihoods
     
     # Step 4: Policy Refinement
     for (k in 1:K) {
-      psi_pa[t0:t,] <- learn_psi(X_apf[t0:t,,, drop = FALSE], obs[t0:t,, drop = FALSE],
+      
+      for (s in t0:t) {X_apf[s,,] <- H_tilde[[s + 1]]$X}
+      
+      psi_pa[t0:t,] <- learn_psi(X_apf[t0:t,,, drop = FALSE],
                                  model, log_likelihoods_apf[t0:t,, drop = FALSE])
       
-      logZ_t = 0
       for (s in t0:t) {
-        if (s == 1) {
-          H_prev <- list(X = X0, logW = w0, logZ = 0)
-        } else {
-          H_prev <- list(X = X_apf[s - 1,,], logW = log_W_apf[s - 1,], logZ = logZ_t)
-        }
+        output <- run_psi_APF_rolling(data, s, psi_pa, H_tilde[[s]], model, init = FALSE)
         
-        output <- run_psi_APF_rolling(data, s, psi_pa, H_prev, model, init = FALSE)
-        X_apf[s,,] <- output$X
-        log_W_apf[s,] <- output$logW
+        H_tilde[[s+1]] <- output$H
         log_likelihoods_apf[s,] <- output$log_likelihoods
-        logZ_t <- output$logZ
       }
     }
     
     # Step 5: Final pass to get filtering distributions + logZ
-    H_prev <- if (t0 == 1) list(X = X0, logW = w0, logZ = 0) else list(X 
-                    = X[t0 - 1,, ], logW = log_W[t0 - 1,], logZ = 0)
-    
-    logZ_s = 0
-    
+
     for (s in t0:t) {
       
-      output <- run_psi_APF_rolling(data, s, psi_pa, H_prev, model, init = FALSE)
-      X[s,,] <- output$X
-      log_W[s,] <- output$logW
-      logZ_s <- output$logZ
-      W_t <- normalise_weights_in_log_space(log_W[s,])[[1]]
-      filtering_estimates[s,] <- colSums(W_t * X[s,,])
+      output <- run_psi_APF_rolling(data, s, psi_pa, H[[s]], model, init = FALSE)
       
-      H_prev <- list(X = X[s,,], logW = log_W[s,], logZ = logZ_s)
+      H[[s+1]] <- output$H
+     
+      #W_t <- normalise_weights_in_log_space(log_W[s,])[[1]]
+      #filtering_estimates[s,] <- colSums(W_t * X[s,,])
+      
     }
     
-    logZ_vec[t] <- if (t0 == 1) logZ_t  else logZ_s + logZ_vec[t0 - 1] 
+  
+    logZ_vec[t] <- H[[t + 1]]$logZ
+    
   }
   
   return(list(logZ = logZ_vec, f_means = filtering_estimates))
