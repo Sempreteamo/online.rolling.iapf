@@ -6,7 +6,7 @@
 #' @param t time
 #' @param data List containing required data information on which to run the filter
 #' @param H_prev previous information
-#' @param psi_pa Parameters of the twisting function
+#' @param psi_t Parameters of the twisting function
 #' @param init Index to decide whether the algorithm is at its initialized block
 #' @param model A list containing information of model
 #'
@@ -15,46 +15,42 @@
 #'
 #' @export
 #'
-run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
-  
-  # Extract previous values
-  obs <- data$obs
+run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
+  N <- nrow(H_prev$X)
+  d <- ncol(H_prev$X)
   X_prev <- H_prev$X
   logW_prev <- H_prev$logW
   logZ_t <- H_prev$logZ
-  #logZ_prev <- H_prev$logZ
-  #logZ_t = 0
-  kappa <- model$parameters$kappa
-  N <- length(logW_prev)  # Number of particles
   
-  ini <-model$ini
   ini_mu <- model$ini_mu
+  ini_cov <- model$ini_cov
   
   A <- model$tran_mu
   B <- model$tran_cov
+  obs <- data$obs
+  kappa <- model$parameters$kappa
   obs_params <- model$obs_params
-  d <- ncol(A)
+  C <- model$obs_params$obs_mean
+  D <- model$obs_params$obs_cov
+  
   
   X_new <- matrix(NA, N, d)
   
   # Step 1: Compute v^n in log domain
-  log_psi_tilde <- rep(NA, N)
-  for(i in 1:N){
-    log_psi_tilde[i] <-  evaluate_psi_tilde(X_prev[i,, drop = FALSE], psi_pa[t,], model)
-  }
-  
+  log_psi_tilde <- sapply(1:N, function(i) evaluate_psi_tilde(X_prev[i,, drop = FALSE], psi_t, model))
+ 
   log_v <- logW_prev + log_psi_tilde  # log(W_t-1) + log(f_t)
   
   
   # Step 2: Compute logZ_t and normalized logV
-  logZ_t <- logZ_t + log_sum_exp(log_v)
+  logZ_v <- log_sum_exp(log_v)
   logV <- log_v - log_sum_exp(log_v)
   
   # Step 3: Compute ESS and resample if necessary
   ESS <- exp(-log_sum_exp(2 * logV))
   
   if (ESS < kappa * N) {
-    ancestors <- resample_particles(logV)
+    ancestors <- resample(logW_prev)
     cat('re at ', t)
     logV <- rep(-log(N), N)  # Reset logV after resampling
     #add = rep(0, N) #??
@@ -65,39 +61,54 @@ run_psi_APF_rolling <- function(data, t, psi_pa, H_prev, model, init) {
   
   # Step 4: Sample new states using f_t^ψ
   log_likelihoods <- rep(NA, N)
-  log_g <- rep(NA, N)
+  
   log_psi_t <- rep(NA, N)
   
   
   for(i in 1:N){
-    if(init == TRUE && t == 1){
+    if (init == TRUE && t == 1) {
+     
+      X_new[i, ] <- mvnfast::rmvn(1, ini_mu, ini_cov)
       
-      X_new[i,] <- mvnfast::rmvn(1, ini_mu, model$ini_cov)
-    } else if(init == TRUE) {
+    } else if (init == TRUE && t != 1) {
+     
+      X_new[i, ] <- mvnfast::rmvn(1, A %*% X_prev[ancestors[i], ], B)
       
-      X_new[i,] <- mvnfast::rmvn(1, ini_mu + A %*% (X_prev[ancestors[i],] - ini_mu), B)
+    } else if (init == FALSE && t == 1) {
+    
+      X_new[i, ] <- sample_twisted_initial(list(mean = ini_mu, cov = as.matrix(ini_cov)[1,1]), psi_t, 1)
+      #X_new[i, ] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_t[t, ], 1)
+      
+     
     } else {
       
-      X_new[i,] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_pa[t,], 1)
+      X_new[i, ] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_t, 1)
     }
     
-    log_likelihoods[i] <- model$eval_likelihood(X_new[i,], obs[t,, drop = FALSE], obs_params)
-    log_psi_t[i] <- evaluate_psi(X_new[i,], psi_pa[t,])
+    log_likelihoods[i] <- dmvnorm(obs[t,, drop = FALSE],  as.vector(C%*%X_new[i,]), sigma=D, log=TRUE)
+    #log_likelihoods[i] <-  model$eval_likelihood(X_new[i,], obs[t,, drop = FALSE], obs_params)
+    log_psi_t[i] <- evaluate_psi(X_new[i,], psi_t)
+    #log_psi_t[i] <- dmvnorm(X[n,], mean=psi_t[1:d], sigma=psi_cov, log=TRUE)
   }
   
   
-  
-  log_g <- log_likelihoods #+ add 
-  
   # Step 5: Compute log w_t
-  log_w <- logV + log_g - log_psi_t  # log(V_t) + log(g) - log(ψ_t)
+  
+    log_w <- logV + log_likelihoods - log_psi_t
+  
+  
+  
+    # log(V_t) + log(g) - log(ψ_t)
   
   # Step 6: Compute log Z_t and normalize weights
-  logZ_t <- logZ_t + log_sum_exp(log_w)
+  logZ_w <- log_sum_exp(log_w)
+  
   logW <- log_w - log_sum_exp(log_w)  # Self-normalized log weights
   
+  logZ_new <- logZ_t + logZ_w + logZ_v 
+  
   # Return updated particle system
-  return(list(X = X_new, logW = logW, logZ = logZ_t, log_likelihoods = log_likelihoods))
+  return(list(H = list(X = X_new, logW = logW, logZ = logZ_new, log_li = log_likelihoods), log_likelihoods = log_likelihoods))
 }
 
 
