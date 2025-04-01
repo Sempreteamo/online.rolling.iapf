@@ -42,19 +42,24 @@ Orc_SMC <- function(lag, data, model, N) {
     t0 <- max(t - lag + 1, 1)
     
     # Step 3: Init pass with psi ≡ 1
-    psi_pa[t, ] <- rep(1, 2*d)
+    #psi_pa[t, ] <- rep(1, 2*d)
     
-    output <- run_psi_APF_rolling(data, t, psi_pa[t,, drop = FALSE], H_tilde[[t]] , model, init = TRUE)
+    output <- run_psi_APF_rolling(data, t, rep(1, 2*d), H_tilde[[t]] , model, init = TRUE)
     H_tilde[[t+1]] <- output$H
     #log_likelihoods_apf[t,] <- output$log_likelihoods
     
     # Step 4: Policy Refinement
-    psi_pa[t+1, ] <- rep(1, 2*d)
+    #psi_pa[t+1, ] <- rep(1, 2*d)
     
     for (k in 1:K) {
       
       for (s in t:t0) {
-        psi_pa[s,] <- learn_psi(s, psi_pa[s+1,, drop = FALSE ], H_tilde[[s+1]], model)
+        if(s == t){
+          psi_pa[s,] <- learn_psi(s, rep(1, 2*d), H_tilde[[s+1]], model)
+        }else{
+          psi_pa[s,] <- learn_psi(s, psi_pa[s+1,, drop = FALSE ], H_tilde[[s+1]], model)
+        }
+        
       }
       
       for (s in t0:t) {
