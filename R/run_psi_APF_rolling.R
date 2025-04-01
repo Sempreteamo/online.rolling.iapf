@@ -30,9 +30,8 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
   obs <- data$obs
   kappa <- model$parameters$kappa
   obs_params <- model$obs_params
-  C <- model$obs_params$obs_mean
-  D <- model$obs_params$obs_cov
-  
+  C <- obs_params$obs_mean
+  D <- obs_params$obs_cov
   
   X_new <- matrix(NA, N, d)
   
@@ -76,8 +75,8 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
       
     } else if (init == FALSE && t == 1) {
     
-      #X_new[i, ] <- sample_twisted_initial(list(mean = ini_mu, cov = as.matrix(ini_cov)[1,1]), psi_t, 1)
-      X_new[i, ] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_t, 1)
+      X_new[i, ] <- sample_twisted_initial(list(mean = ini_mu, cov = as.matrix(ini_cov)[1,1]), psi_t, 1)
+      #X_new[i, ] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_t, 1)
       
      
     } else {
@@ -85,7 +84,8 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
       X_new[i, ] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_t, 1)
     }
     
-    log_likelihoods[i] <-  model$eval_likelihood(X_new[i,], obs[t,, drop = FALSE], obs_params)
+    log_likelihoods[i] <- dmvnorm(obs[t,], mean=C%*%X_new[i,], sigma=D, log=TRUE)
+    #log_likelihoods[i] <-  model$eval_likelihood(X_new[i,], obs[t,, drop = FALSE], obs_params)
     log_psi_t[i] <- evaluate_psi(X_new[i,], psi_t)
     #log_psi_t[i] <- dmvnorm(X[n,], mean=psi_t[1:d], sigma=psi_cov, log=TRUE)
   }
@@ -107,6 +107,6 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
   logZ_new <- logZ_t + logZ_w + logZ_v 
   
   # Return updated particle system
-  return(list(H = list(X = X_new, logW = logW, logZ = logZ_new, log_li = log_likelihoods), log_likelihoods = log_likelihoods))
+  return(list(H = list(X = X_new, logW = logW, logZ = logZ_new, log_li = log_likelihoods)))
 }
 #' @import mvnfast
