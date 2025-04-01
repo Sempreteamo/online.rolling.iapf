@@ -11,27 +11,27 @@
 #' @export
 #'
 evaluate_psi_tilde <- function(x, psi_pa, model){
-
-
+  
+  
   d <- length(x)
   A <- model$tran_mu
   B <- model$tran_cov
   ini <- model$ini_mu
-
-  dif <- as.vector(ini + A%*%(as.vector(t(x - ini))) - psi_pa[1:d])
-
-  full_covariance <- diag(psi_pa[(d + 1):(d + d)], nrow=d, ncol=d) + B
-
-  psi_tilde <- tryCatch({
-    (-d / 2) * log(2 * pi) - (1 / 2) * log(det(full_covariance)) -
-      (1 / 2) * t(dif) %*% solve(full_covariance)%*% dif
-  }, error = function(e) {
-
-    return(0)
-  })
-
-  if(is.na(psi_tilde) == TRUE){
+  
+  if(all(psi_pa == 1)){
+    
     psi_tilde <- 0
+    
+  }else{
+    dif <- as.vector(ini + A%*%(as.vector(t(x - ini))) - psi_pa[1:d])
+    
+    full_covariance <- diag(psi_pa[(d + 1):(d + d)], nrow=d, ncol=d) + B
+    
+    psi_tilde <- (-d / 2) * log(2 * pi) - (1 / 2) * log(det(full_covariance)) -
+      (1 / 2) * t(dif) %*% solve(full_covariance)%*% dif
+    
   }
+  
   return(psi_tilde)
 }
+
