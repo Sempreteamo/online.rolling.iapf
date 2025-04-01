@@ -50,7 +50,7 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
   ESS <- exp(-log_sum_exp(2 * logV))
   
   if (ESS < kappa * N) {
-    ancestors <- resample(logW_prev)
+    ancestors <- resample(logV)
     cat('re at ', t)
     logV <- rep(-log(N), N)  # Reset logV after resampling
     #add = rep(0, N) #??
@@ -77,7 +77,7 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
     } else if (init == FALSE && t == 1) {
     
       #X_new[i, ] <- sample_twisted_initial(list(mean = ini_mu, cov = as.matrix(ini_cov)[1,1]), psi_t, 1)
-      X_new[i, ] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_t[t, ], 1)
+      X_new[i, ] <- sample_twisted_transition(X_prev[ancestors[i], ], model, psi_t, 1)
       
      
     } else {
