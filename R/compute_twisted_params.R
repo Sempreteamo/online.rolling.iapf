@@ -15,13 +15,16 @@ compute_twisted_params <- function(params, psi){
   dist_mu <- params$mean
   dist_cov <- params$cov
   psi_mu <- psi[1:d]
-  psi_cov <- psi[(d+1):(d+d)]
-
-  zc <- (psi_cov^(-1) + dist_cov^(-1))^(-1)
-
-  mu <- zc*(dist_cov^(-1)*dist_mu + psi_cov^(-1)*psi_mu)
-
-  cov <- diag(zc, d, d)
-
-  return(params = list(mu, cov))
+  psi_cov <- diag(psi[(d+1):(d+d)], d, d)
+  
+  dist_prec <- solve(dist_cov)
+  psi_prec <- solve(psi_cov)
+  
+  combined_prec <- dist_prec + psi_prec
+  combined_cov <- solve(combined_prec)
+  
+  # Combined mean
+  combined_mean <- combined_cov %*% (dist_prec %*% dist_mu + psi_prec %*% psi_mu)
+  
+  return(params = list(mu = as.vector(combined_mean), cov = combined_cov))
 }
