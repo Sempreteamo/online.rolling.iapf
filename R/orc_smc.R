@@ -1,14 +1,3 @@
-#' Rolling window function
-#'
-#' 
-#'
-#' @param lag 
-#' @param data 
-#' @param model 
-#' @param N
-#'
-#' @return A matrix of observations with dimensions Time x d.
-#' @export
 Orc_SMC <- function(lag, data, model, N) {
   obs <- data$obs
   Time <- nrow(obs)
@@ -42,23 +31,21 @@ Orc_SMC <- function(lag, data, model, N) {
     t0 <- max(t - lag + 1, 1)
     
     # Step 3: Init pass with psi ≡ 1
-    #psi_pa[t, ] <- rep(1, 2*d)
+    #psi_pa[t, ] <- rep(NA, 2*d)
+    #psi_pa[t+1, ] <- rep(NA, 2*d)
     
-    output <- run_psi_APF_rolling(data, t, rep(1, 2*d), H_tilde[[t]] , model, init = TRUE)
+    output <- run_psi_APF_rolling(data, t,  psi_pa[t, ] , H_tilde[[t]] , model, init = TRUE)
     H_tilde[[t+1]] <- output$H
-    #log_likelihoods_apf[t,] <- output$log_likelihoods
     
     # Step 4: Policy Refinement
-    #psi_pa[t+1, ] <- rep(1, 2*d)
+   
     
     for (k in 1:K) {
       
       for (s in t:t0) {
-        if(s == t){
-          psi_pa[s,] <- learn_psi(s, rep(1, 2*d), H_tilde[[s+1]], model)
-        }else{
-          psi_pa[s,] <- learn_psi(s, psi_pa[s+1,, drop = FALSE ], H_tilde[[s+1]], model)
-        }
+        
+       psi_pa[s,] <- learn_psi(s, psi_pa[s+1,, drop = FALSE ], H_tilde[[s+1]], model)
+        
         
       }
       
@@ -66,7 +53,7 @@ Orc_SMC <- function(lag, data, model, N) {
         output <- run_psi_APF_rolling(data, s, psi_pa[s,, drop = FALSE], H_tilde[[s]], model, init = FALSE)
         
         H_tilde[[s+1]] <- output$H
-        #log_likelihoods_apf[s,] <- output$log_likelihoods
+
       }
     }
     
@@ -77,9 +64,6 @@ Orc_SMC <- function(lag, data, model, N) {
       output <- run_psi_APF_rolling(data, s, psi_pa[s,, drop = FALSE], H[[s]], model, init = FALSE)
       
       H[[s+1]] <- output$H
-     
-      #W_t <- normalise_weights_in_log_space(log_W[s,])[[1]]
-      #filtering_estimates[s,] <- colSums(W_t * X[s,,])
       
     }
     
