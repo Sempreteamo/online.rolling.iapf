@@ -19,7 +19,7 @@ learn_psi <- function(s, psi_t, H_prev, model){
   log_psi <- numeric(N)
   psi_pa <- numeric(2*d)
   
-  if(all(psi_t == 1)){
+  if(all(is.na(psi_t))){
     
     log_psi <- log_likelihoods
     
@@ -35,4 +35,3 @@ learn_psi <- function(s, psi_t, H_prev, model){
   return(psi_pa = psi_pa)
   
 }
-
