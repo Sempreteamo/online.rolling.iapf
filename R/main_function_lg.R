@@ -3,8 +3,8 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 800
-#' lag = 10
+#' Napf = N = 200
+#' lag = 5
 #' Time = 100
 #' d_ = 10
 #'
@@ -18,11 +18,11 @@
 #' ini <- rep(0, d_)
 #' 
 #' tran_m = diag(1, nrow = d_, ncol = d_)
-#' tran_c = diag(1/10, nrow = d_, ncol = d_)
+#' tran_c =  diag(1/10, nrow = d_, ncol = d_)
 #' ini_c = diag(1, nrow = d_, ncol = d_)
 #' obs_m = diag(1, nrow = d_, ncol = d_)
 #' obs_c = diag(1/2, nrow = d_, ncol = d_)
-#' parameters_ <- list(k = 7, tau = 0.5, kappa = 0.5)
+#' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
 #' obs_p <- list(obs_mean = obs_m, obs_cov = obs_c)
 #'
 #' output <- generate_blocks(lag, Time)
@@ -80,7 +80,9 @@
 #' for(i in 1:num_runs){
 #' set.seed(i)
 #' output <- iAPF(data, Napf, model)
-#' logZ_matrix_iapf[i, ] <- output
+#' 
+#' psi_pa <- output$psi
+#' logZ_matrix_iapf[i, ] <- output$Z
 #' #filtering_estimates <- output$f_means
 #' log_ratio_iapf[i] <- compute_log_ratio(logZ_matrix_iapf[i,Time], filtering)
 #' print(log_ratio_iapf[i] )
@@ -89,7 +91,7 @@
 #' 
 #' log_ratio_rolling_vec <- matrix(NA, nrow = num_runs, ncol = Time)
 #' for(n in 1:num_runs){
-#' for(i in 1:Time){
+#' for(i in 1:1){
 #' filter <- compute_fkf_filtering(params, obs_[1:i,, drop = FALSE])
 #' filtering <- filter[[1]]
 #' log_ratio_rolling_vec[n, i] <- compute_log_ratio(logZ_matrix_rolling[n, i], filtering)

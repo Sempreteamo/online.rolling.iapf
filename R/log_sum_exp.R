@@ -12,7 +12,10 @@
 #'
 log_sum_exp <- function(log_weights) {
   max_logW <- max(log_weights)
-  max_logW + log(sum(exp(log_weights - max_logW)))
+  w_centered <- exp(log_weights - max_logW)
+  sum_wc <- sum(w_centered)
+  log_w <- max_logW + log(sum_wc)
+  return(log_w)
 }
 
 # Main function implementing ψ-APF

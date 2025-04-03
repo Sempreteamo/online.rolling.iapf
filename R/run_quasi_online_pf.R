@@ -52,12 +52,12 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
     print(t)
     
     if(t %in% unlist(breaks)){
-
+      
       if(previous_time != 0){
-       indices <- which(sapply(breaks, function(b) 
+        indices <- which(sapply(breaks, function(b) 
           max(unlist(breaks)[unlist(breaks) < previous_time] ) %in% b)) 
-       psi_index <- c(psi_index, rep(indices, Time - previous_time))
-       
+        psi_index <- c(psi_index, rep(indices, Time - previous_time))
+        
       }else{
         indices <- which(sapply(breaks, function(b) t %in% b)) 
       }
@@ -67,14 +67,14 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         if(t == Time){
           b_s <- if (length(breaks[[index]]) > 1) 
             breaks[[index]][length(breaks[[index]]) - 1] + 1 else 1
-
+          
           
         }else{
           b_s <- max(breaks[[index]][block[[index]]], 1)
         }
         
         block[[index]] <- block[[index]] + 1
-
+        
         data$run_block <- c(index, b_s, t) #which layer, which block iAPF runs
         data$past <- list(X_apf[[index]], w_apf[[index]]) #initialize distribution
         
@@ -100,9 +100,9 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
         #Step 4: Update psi-APF
         
         psi_u <- ifelse(is.na(which(is.na(psi_final))[1] - 1), Time, 
-                         which(is.na(psi_final))[1] - 2) #psi updated to where
+                        which(is.na(psi_final))[1] - 2) #psi updated to where
         
-       
+        
         if( psi_u > 0){
           psi_u = max(psi_l, psi_u)
           print(c(psi_l, psi_u))
@@ -131,21 +131,20 @@ run_quasi_online_pf <- function(model, data, Napf, N, previous_info = NULL){
           print(logZ)
           
           #if(psi_u != Time){
-           # w[psi_u,] <- w[psi_u,] - normalise_weights_in_log_space(w[psi_u,])[[2]]  #+ logZ
+          # w[psi_u,] <- w[psi_u,] - normalise_weights_in_log_space(w[psi_u,])[[2]]  #+ logZ
           #ancestors[psi_l:psi_u,] <- output1[[4]][psi_l:psi_u,]
           #}
-        
-        psi_l = max(psi_u + 1, 1)
+          
+          psi_l = max(psi_u + 1, 1)
+          
+        }
         
       }
       
+      
     }
-    
-
   }
-}
   return(list(X = X, w = w, logZ = logZ, psi_final = psi_final, X_apf = X_apf, w_apf = w_apf, ancestors = ancestors))
 }
-
 
 

@@ -19,7 +19,7 @@ evaluate_likelihood_lg <- function(x, datum, obs_params) {
 
     dif <- as.vector(datum) - obs_mean %*% x
 
-    likelihood <- (-d / 2) * log(2 * pi) - (1 / 2) * log(prod(diag(obs_cov))) -
+    likelihood <- (-d / 2) * log(2 * pi) - (1 / 2) * log(det(obs_cov)) -
       (1 / 2) * t(dif) %*% solve(obs_cov) %*% dif
 
 

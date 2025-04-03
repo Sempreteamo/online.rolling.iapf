@@ -43,7 +43,8 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
   # Step 2: Compute logZ_t and normalized logV
   logZ_v <- log_sum_exp(log_v)
     
-  logV <- log(normalise_weights_in_log_space(log_v)[[1]])
+  logV <- log_v - logZ_v 
+  #log(normalise_weights_in_log_space(log_v)[[1]])
     #log_v - logZ_v#log(normalise_weights_in_log_space(log_v)[[1]]) ?
   
   # Step 3: Compute ESS and resample if necessary
@@ -104,7 +105,7 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
   logZ_w <- log_sum_exp(log_w) #normalise_weights_in_log_space(log_w)[[2]]
     #log_sum_exp(log_w)
   
-  logW <- log(normalise_weights_in_log_space(log_w)[[1]]) #log_w - logZ_w
+  logW <- log_w - logZ_w #log(normalise_weights_in_log_space(log_w)[[1]]) #log_w - logZ_w
     
     # # Self-normalized log weights
   

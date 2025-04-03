@@ -28,3 +28,4 @@ compute_twisted_params <- function(params, psi){
   
   return(params = list(mu = as.vector(combined_mean), cov = combined_cov))
 }
+

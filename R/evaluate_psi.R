@@ -9,8 +9,9 @@
 #' @return Psi function evaluated at specified points
 #' @export
 #'
+#'
 evaluate_psi <- function(x, psi_pa){
-  if(all(psi_pa == 1)){
+  if(all(is.na(psi_pa))){
     psi_x <- 0
   }else{
     d <- length(x)
@@ -23,3 +24,4 @@ evaluate_psi <- function(x, psi_pa){
  
   return(psi_x)
 }
+

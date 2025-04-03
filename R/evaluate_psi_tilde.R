@@ -18,7 +18,7 @@ evaluate_psi_tilde <- function(x, psi_pa, model){
   B <- model$tran_cov
   ini <- model$ini_mu
   
-  if(all(psi_pa == 1)){
+  if(all(is.na(psi_pa))){
     
     psi_tilde <- 0
     

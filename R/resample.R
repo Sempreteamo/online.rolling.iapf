@@ -13,7 +13,7 @@ resample <- function(logW, mode = 'res'){
 
   N <- length(logW)
   w_ <- normalise_weights_in_log_space(logW)[[1]]
-  #w_ <- exp(logW)
+  #w_ <- logW
 
   if(mode == 'multi'){
 

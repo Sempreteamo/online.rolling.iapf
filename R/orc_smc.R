@@ -1,3 +1,14 @@
+#' Rolling window function
+#'
+#' 
+#'
+#' @param lag 
+#' @param data 
+#' @param model 
+#' @param N
+#'
+#' @return A matrix of observations with dimensions Time x d.
+#' @export
 Orc_SMC <- function(lag, data, model, N) {
   obs <- data$obs
   Time <- nrow(obs)
@@ -50,7 +61,8 @@ Orc_SMC <- function(lag, data, model, N) {
       }
       
       for (s in t0:t) {
-        output <- run_psi_APF_rolling(data, s, psi_pa[s,, drop = FALSE], H_tilde[[s]], model, init = FALSE)
+        output <- run_psi_APF_rolling(data, s, 
+                          psi_pa[s,, drop = FALSE], H_tilde[[s]], model, init = FALSE)
         
         H_tilde[[s+1]] <- output$H
 
@@ -61,7 +73,8 @@ Orc_SMC <- function(lag, data, model, N) {
 
     for (s in t0:t) {
       
-      output <- run_psi_APF_rolling(data, s, psi_pa[s,, drop = FALSE], H[[s]], model, init = FALSE)
+      output <- run_psi_APF_rolling(data, s, 
+                            psi_pa[s,, drop = FALSE], H[[s]], model, init = FALSE)
       
       H[[s+1]] <- output$H
       
