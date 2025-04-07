@@ -4,8 +4,8 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 5
-#' Time = 100
+#' lag = 12
+#' Time = 300
 #' d_ = 10
 #'
 #' #alpha = 0.42
@@ -19,10 +19,10 @@
 #' 
 #' tran_m = diag(1, nrow = d_, ncol = d_)
 #' tran_c =  diag(1/10, nrow = d_, ncol = d_)
-#' ini_c = diag(1, nrow = d_, ncol = d_)
+#' ini_c = diag(1/10, nrow = d_, ncol = d_)
 #' obs_m = diag(1, nrow = d_, ncol = d_)
 #' obs_c = diag(1/2, nrow = d_, ncol = d_)
-#' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
+#' parameters_ <- list(k = 8, tau = 0.5, kappa = 0.5)
 #' obs_p <- list(obs_mean = obs_m, obs_cov = obs_c)
 #'
 #' output <- generate_blocks(lag, Time)
@@ -64,7 +64,7 @@
 #' avg <- matrix(nrow = 1, ncol = Time)
 #' filtering_estimates <- 0
 #' 
-#' num_runs <- 1
+#' num_runs <- 2
 #' logZ_matrix_rolling <- matrix(NA, nrow = num_runs, ncol = Time)
 #' 
 #' for(i in 1:num_runs){
@@ -72,7 +72,7 @@
 #' output <- Orc_SMC(lag, data, model, N)
 #' logZ_matrix_rolling[i, ] <- output$logZ
 #' filtering_estimates <- output$f_means
-#' log_ratio_rolling[i] <- compute_log_ratio(logZ_matrix_rolling[i,Time], filtering)
+#' log_ratio_rolling[i] <- compute_ratio(logZ_matrix_rolling[i,Time], filtering)
 #' print(log_ratio_rolling[i] )
 #' }
 #' 

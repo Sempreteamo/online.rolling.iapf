@@ -74,7 +74,7 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
       
     } else if (init == TRUE && t != 1) {
      
-      X_new[i, ] <- mvnfast::rmvn(1, A %*% X_prev[ancestors[i], ], B)
+      X_new[i, ] <- mvnfast::rmvn(1, ini_mu + A %*% (X_prev[ancestors[i], ] + ini_mu), B)
       
     } else if (init == FALSE && t == 1) {
     
