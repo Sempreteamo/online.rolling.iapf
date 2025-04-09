@@ -4,9 +4,9 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 12
-#' Time = 300
-#' d_ = 10
+#' lag = 10
+#' Time = 1000
+#' d_ = 2
 #'
 #' #alpha = 0.42
 #' #tran_m <- matrix(nrow = d_, ncol = d_)
@@ -18,8 +18,8 @@
 #' ini <- rep(0, d_)
 #' 
 #' tran_m = diag(1, nrow = d_, ncol = d_)
-#' tran_c =  diag(1/10, nrow = d_, ncol = d_)
-#' ini_c = diag(1/10, nrow = d_, ncol = d_)
+#' tran_c =  diag(1/8, nrow = d_, ncol = d_)
+#' ini_c = diag(1, nrow = d_, ncol = d_)
 #' obs_m = diag(1, nrow = d_, ncol = d_)
 #' obs_c = diag(1/2, nrow = d_, ncol = d_)
 #' parameters_ <- list(k = 8, tau = 0.5, kappa = 0.5)
@@ -45,7 +45,7 @@
 #'
 #' dt_ <- ct_ <- matrix(0, d_, 1)
 #' Tt_ <- as.matrix(tran_m)
-#' params <- list(dt = dt_, ct = ct_, Tt = Tt_, P0 = P0_, Zt = Zt_,
+#' params <- list(dt = dt_, ct = ct_, Tt = Tt_, P0 = P0_ , Zt = Zt_,
 #'                Ht = Ht_, Gt = Gt_, a0 = a0_, d = d_)
 #'
 #' filter <- compute_fkf_filtering(params, obs_)
@@ -64,7 +64,8 @@
 #' avg <- matrix(nrow = 1, ncol = Time)
 #' filtering_estimates <- 0
 #' 
-#' num_runs <- 2
+#' 
+#' num_runs <- 1
 #' logZ_matrix_rolling <- matrix(NA, nrow = num_runs, ncol = Time)
 #' 
 #' for(i in 1:num_runs){

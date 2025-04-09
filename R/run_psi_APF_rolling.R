@@ -31,11 +31,17 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
   kappa <- model$parameters$kappa
   obs_params <- model$obs_params
   
+  #model$ini_cov <- B
   
   X_new <- matrix(NA, N, d)
   
   # Step 1: Compute v^n in log domain
-  log_psi_tilde <- sapply(1:N, function(i) evaluate_psi_tilde(X_prev[i,], psi_t, model))
+  if(t == 1){
+    log_psi_tilde <- rep(evaluate_psi_tilde_ini(psi_t, model), N)
+  }else{
+    log_psi_tilde <- sapply(1:N, function(i) evaluate_psi_tilde(X_prev[i,], psi_t, model))
+  }
+  
  
   log_v <- logW_prev + log_psi_tilde  # log(W_t-1) + log(f_t)
   
@@ -74,7 +80,7 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
       
     } else if (init == TRUE && t != 1) {
      
-      X_new[i, ] <- mvnfast::rmvn(1, ini_mu + A %*% (X_prev[ancestors[i], ] + ini_mu), B)
+      X_new[i, ] <- mvnfast::rmvn(1, ini_mu + A %*% (X_prev[ancestors[i], ] - ini_mu), B)
       
     } else if (init == FALSE && t == 1) {
     

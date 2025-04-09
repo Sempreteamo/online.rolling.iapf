@@ -14,9 +14,9 @@ Orc_SMC <- function(lag, data, model, N) {
   Time <- nrow(obs)
   d <- ncol(obs)
   
-  A <- model$tran_mu
-  B <- model$tran_cov
-  obs_params <- model$obs_params
+  #A <- model$tran_mu
+  #B <- model$tran_cov
+  #obs_params <- model$obs_params
   K <- model$parameters$k
   
   X0 <- matrix(0, nrow = N, ncol = d)
