@@ -25,21 +25,36 @@ APF <- function(psi_pa, data, N, model){
   w <- matrix(NA, Time, N)
   logZ <- 0
   
-  X[1, ,] <- sample_twisted_initial(list(mean = ini_mu, 
-                                         cov = as.matrix(ini_cov)[1,1]), psi_pa[1,], N)  #particles
-  
-  for(i in 1:N){
-    log_likelihoods[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
-    w[1,i] <- eval_twisted_potential(model, 
-                list(psi_pa[1,], psi_pa[2,], psi_pa[1,]), X[1,i,],  log_likelihoods[1,i])
-    #w[1,i] <- log(g_aux(obs[1,], X[1,i,],1, psi_pa))
+ 
+    X[1, ,] <- sample_twisted_initial(list(mean = ini_mu, 
+                                           cov = as.matrix(ini_cov)), psi_pa[1,], N)  #particles
     
+    if(Time == 1){
+      for(i in 1:N){
+        log_likelihoods[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
+        w[1,i] <- eval_twisted_potential(model, 
+                                         list(NA, NA, psi_pa[1,]), X[1,i,],  log_likelihoods[1,i])
+        #w[1,i] <- log(g_aux(obs[1,], X[1,i,],1, psi_pa))
+        
+      }
+     
+    }else{
+      for(i in 1:N){
+        log_likelihoods[1,i] <- model$eval_likelihood(X[1,i,], obs[1,, drop = FALSE], obs_params)
+        w[1,i] <- eval_twisted_potential(model, 
+                                         list(psi_pa[1,], psi_pa[2,], psi_pa[1,]), X[1,i,],  log_likelihoods[1,i])
+        #w[1,i] <- log(g_aux(obs[1,], X[1,i,],1, psi_pa))
+        
+      }
     }
+    
+  
+  
   #re=0
   ancestors[1,] <- seq(1:N)
   #t=2:T
   #2. conditional sample
-  if(Time >= 2){
+  if(Time > 2){
     for(t in 2:(Time - 1)){
       
       #print(t)
@@ -69,7 +84,9 @@ APF <- function(psi_pa, data, N, model){
       
       
     }
-    
+  }
+  
+  if(Time >= 2){
     t = Time
     
     
@@ -96,8 +113,10 @@ APF <- function(psi_pa, data, N, model){
     }
     
     #mx <- max(w[t,  ])
-    logZ = logZ + normalise_weights_in_log_space(w[t,])[[2]]
+    
   }
+  logZ = logZ + normalise_weights_in_log_space(w[t,])[[2]]
+  
 
   #log(mean(exp(w[t,  ]-mx))) + mx
  
@@ -111,6 +130,9 @@ iAPF <- function(data, Napf, model){
   k = 5
   tau <- 0.5
   Z <- vector()
+  H <- vector('list', Time)
+  
+  #H[[1]] <- list(X = X0, logW = w0, logZ = 0)
   
   index = 1
   l = 1  #actually 0
@@ -128,6 +150,7 @@ iAPF <- function(data, Napf, model){
   obs_params <- model$obs_params
   log_likelihoods <- matrix(NA, Time, N)
   ancestors <- matrix(NA, Time, N)
+  psi_pa <- matrix(NA, Time + 1, 2*d)
   
   X[1, ,] <- rnorm(N[l]*d)  #particles
   for(i in 1:N[l]){
@@ -139,34 +162,40 @@ iAPF <- function(data, Napf, model){
   log_likelihoods[1,] <- w[1,]
   Z[l] <- 0
   
+  H[[1]] <- list(X = X[1, ,], logW =  w[1,], log_li = log_likelihoods[1,])
   #t=2:T
   #2. conditional sample
   #re = 0
-  for(t in 2:Time){
-    #print(t)
-    
-    #a)
-    if(compute_ESS_log(w[t-1,]) <= kappa*N[l]){
-      ancestors[t,] <- resample(w[t-1,])
-      Z[l] = Z[l] + normalise_weights_in_log_space(w[t-1,])[[2]]
-      add <- rep(0, N)
+  if(Time >= 2){
+    for(t in 2:Time){
+      #print(t)
       
-    }else{
-      ancestors[t,] <- c(1:N[l])
-      add <- w[t-1,]
-    }
+      #a)
+      if(compute_ESS_log(w[t-1,]) <= kappa*N[l]){
+        ancestors[t,] <- resample(w[t-1,])
+        Z[l] = Z[l] + normalise_weights_in_log_space(w[t-1,])[[2]]
+        add <- rep(0, N)
+        
+      }else{
+        ancestors[t,] <- c(1:N[l])
+        add <- w[t-1,]
+      }
       
-    for(i in 1:N[l]){
-      X[t, i,] <- mvnfast::rmvn(1, ini_mu + 
-                      A%*%(as.vector(X[t-1, ancestors[t,i],]) - ini_mu), B)
-      log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], 
-                                        obs[t,, drop = FALSE], obs_params)
+      for(i in 1:N[l]){
+        X[t, i,] <- mvnfast::rmvn(1, ini_mu + 
+                                    A%*%(as.vector(X[t-1, ancestors[t,i],]) - ini_mu), B)
+        log_likelihoods[t,i] <- model$eval_likelihood(X[t,i,], 
+                                                      obs[t,, drop = FALSE], obs_params)
+      }
+      
+      w[t,] <- log_likelihoods[t,] + add
+      
+      H[[t]] <- list(X = X[t, ,], logW =  w[t,], log_li = log_likelihoods[t,])
     }
     
-    w[t,] <- log_likelihoods[t,] + add
+    Z[l] = Z[l] + normalise_weights_in_log_space(w[t,])[[2]]
   }
   
-  Z[l] = Z[l] + normalise_weights_in_log_space(w[t,])[[2]]
 
   #print(paste0('re=',re))
   
@@ -183,6 +212,10 @@ iAPF <- function(data, Napf, model){
       w <- output$w
       Z[l] <- output$logZ
       log_likelihoods <- output$log_likelihoods
+      
+      for(t in 1:Time){
+        H[[t]] <- list(X = X[t, ,], logW =  w[t,], log_li = log_likelihoods[t,])
+      }
     }
     
     #b)
@@ -190,7 +223,10 @@ iAPF <- function(data, Napf, model){
     if(l <= k | (Num(Z, l, k) >= tau)){
       #psi^{l+1}
       
-      psi_pa <- learn_psi(X, obs, model, log_likelihoods)
+      for(s in Time:1){
+        psi_pa[s,] <- learn_psi(s, psi_pa[s+1,, drop = FALSE ], H[[s]], model)
+      }
+      
       
       
       if(l > k & N[max(l-k,1)] == N[l] & is.unsorted(Z[max(l-k,1):l])){
@@ -210,9 +246,10 @@ iAPF <- function(data, Napf, model){
   }
   
   #3.
-  output <- APF(psi_pa, data, N[l], model)
+  #output <- APF(psi_pa, data, N[l], model)
   Z[l] <- output$logZ
   #psi_pa <- output[[5]]
   Z_appro <- Z[l]
- return(Z_appro)
+  print( Z_appro)
+ return(list(Z = Z_appro, psi = psi_pa))
 }
