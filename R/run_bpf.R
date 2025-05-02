@@ -2,12 +2,12 @@
 #'
 #'
 #'
-#' @param model
-#' @param data
-#' @param lag
-#' @param Napf
+#' @param model model used
+#' @param data data used
+#' @param lag lag
+#' @param Napf Number of particles
 #'
-#' @return
+#' @return A list containing
 #' @export
 run_bpf <- function(model, data, lag, Napf){
   obs <- data$obs

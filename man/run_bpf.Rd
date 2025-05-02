@@ -7,7 +7,16 @@
 run_bpf(model, data, lag, Napf)
 }
 \arguments{
-\item{Napf}{}
+\item{model}{model used}
+
+\item{data}{data used}
+
+\item{lag}{lag}
+
+\item{Napf}{Number of particles}
+}
+\value{
+A list containing
 }
 \description{
 Rolling window function
