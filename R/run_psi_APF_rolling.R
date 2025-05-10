@@ -118,7 +118,7 @@ run_psi_APF_rolling <- function(data, t, psi_t, H_prev, model, init) {
   logZ_new <- logZ_t + logZ_w + logZ_v 
   
   # Return updated particle system
-  return(list(H = list(X = X_new, logW = logW, logZ = logZ_new, log_li = log_likelihoods)))
+  return(list(H = list(X = X_new, logW = logW, logZ = logZ_new, log_li = log_likelihoods, anc = ancestors)))
 }
 
 

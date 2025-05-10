@@ -4,7 +4,7 @@
 #' library(mvnfast)
 #' library(FKF)
 #' Napf = N = 200
-#' lag = 8
+#' lag = 4
 #' Time = 944
 #' d_ = 1
 #'
@@ -17,7 +17,7 @@
 #' tran_m = alpha
 #' tran_c = theta^2
 #'
-#' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
+#' parameters_ <- list(k = 7, tau = 0.5, kappa = 0.5)
 #'
 #'
 #' obs_p <- list(obs_mean = obs_m, obs_cov = beta^2)
@@ -28,11 +28,11 @@
 #'  parameters = parameters_, dist = 'lg')
 #'
 #' #obs_ <- sample_obs(model, Time, d_) #provided by users
-#' obs_ <- 100*as.matrix(read.csv('R/data.csv')[1][1:944,])
+#' obs_ <- 100*as.matrix(read.csv('R/data.csv', header = FALSE))
 #'
-#' output <- generate_blocks_half(lag, length(obs_))
-#' breaks_ <- output[[1]]
-#' psi_index_ <- output[[2]]
+#' #output <- generate_blocks_half(lag, length(obs_))
+#' #breaks_ <- output[[1]]
+#' #psi_index_ <- output[[2]]
 #'
 #' dt_ <- ct_ <- matrix(0, d_, 1)
 #' Tt_ <- as.matrix(tran_m)
@@ -45,7 +45,7 @@
 #' filtering <- filter[[1]]
 #' smoothing <- filter[[2]]
 #'
-#' data <- list(obs = obs_, breaks = breaks_, psi_index = psi_index_)
+#' data <- list(obs = obs_)
 #'
 #' kalman <- list(fkf.obj = filtering, fks.obj  = smoothing ) #provided by users
 #'log_ratio <- vector()
@@ -56,14 +56,14 @@
 #' filtering_estimates <- 0
 #' 
 #' num_runs <- 1
-#' logZ_matrix_rolling <- matrix(NA, nrow = num_runs, ncol = Time)
+#' logZ_matrix_rolling_svm <- matrix(NA, nrow = num_runs, ncol = Time)
 #' 
 #' for(i in 1:num_runs){
 #' set.seed(i*2)
 #' output <- Orc_SMC(lag, data, model, N)
-#' logZ_matrix_rolling[i, ] <- output$logZ
+#' logZ_matrix_rolling_svm[i, ] <- output$logZ
 #' filtering_estimates <- output$f_means
-#' log_ratio_rolling[i] <- compute_log_ratio(logZ_matrix_rolling[i,Time], filtering)
+#' log_ratio_rolling[i] <- compute_log_ratio(logZ_matrix_rolling_svm[i,Time], filtering)
 #' print(log_ratio_rolling[i] )
 #' }
 #' 

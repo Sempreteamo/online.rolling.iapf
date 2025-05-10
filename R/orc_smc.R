@@ -85,5 +85,5 @@ Orc_SMC <- function(lag, data, model, N) {
     
   }
   
-  return(list(logZ = logZ_vec, f_means = filtering_estimates))
+  return(list(logZ = logZ_vec, f_means = filtering_estimates, H_forward  = H))
 }

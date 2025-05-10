@@ -1,11 +1,12 @@
-#'
+
+#' 
 #'
 #' Log-Sum-Exp function to prevent underflow
 #'
-#' @param log_weights
+#' @param log_weights 
 #'
 #' @return A list containing:
-#'
+#' 
 #'
 #' @export
 #'
