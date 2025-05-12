@@ -4,14 +4,14 @@
 \alias{learn_psi}
 \title{Function to learn twisting log_psi function parameters}
 \usage{
-learn_psi(s, psi_t, H_prev, model)
+learn_psi(x, obs, model, log_likelihoods)
 }
 \arguments{
-\item{model}{List containing model parameters}
-
 \item{x}{A collection of particle locations}
 
 \item{obs}{Observations}
+
+\item{model}{List containing model parameters}
 
 \item{log_likelihoods}{log_likelihoods of the particles generated during the iAPF}
 }

@@ -1,6 +1,8 @@
 library(tidyverse)
 library(readr)
 library(stringr)
+library(grid)
+library(gridExtra)
 
 file_list <- list.files(path = ".", pattern = "rolling_N200T1000.*\\.csv", full.names = TRUE)
 
@@ -155,3 +157,65 @@ ggplot(df_clean, aes(x = lag, y = rmse, color = factor(dimension), group = dimen
     title = "RMSE vs Lag for Different Dimensions"
   ) +
   theme_minimal()
+
+#filtering 
+library(ggplot2)
+library(gridExtra)
+
+
+j     <- 2
+Times <- c(1, floor(Time/2), Time)
+
+plots <- lapply(Times, function(t0){
+  # 1) μ_true, σ²_true
+  μ_true    <- smooth_means[t0, j]
+  σ2_true   <- smooth_covs[j, j, t0]
+  xs        <- seq(μ_true - 4*sqrt(σ2_true),
+                   μ_true + 4*sqrt(σ2_true),
+                   length.out = 200)
+  
+  df_true   <- data.frame(x = xs,
+                          dens = dnorm(xs, mean = μ_true, sd = sqrt(σ2_true)),
+                          type = "KF smoother")
+  
+  # 2) 
+  particles_t0_j <- smooth_particles[, t0, j]
+  
+  # 2) 
+  dens_est <- density(particles_t0_j)
+  
+  # 3) 
+  df_part <- data.frame(
+    x   = dens_est$x,
+    dens= dens_est$y,
+    type= "Orc-SMC"
+  )
+  
+  # 3) 
+  ggplot() +
+   
+    geom_line(data = df_part, aes(x = x, y = dens, color = type), size = 1) +
+    
+    geom_line(data = df_true, aes(x = x, y = dens, color = type), size = 1) +
+    labs(
+      title = paste0("Smoothing marginal, t=", t0, ", coor=", j),
+      x     = bquote(x[.(t0)]), 
+      y     = "density"
+    ) +
+    scale_color_manual(
+      "", 
+      values = c("Orc-SMC" = "steelblue", "KF smoother" = "red")
+    ) +
+    theme_minimal()
+})
+
+
+grid.arrange(
+  grobs = plots,
+  ncol = length(plots),
+  top = textGrob(
+    "N500T1000, d=2, lag=16",
+    gp = gpar(fontsize = 16, fontface = "bold")
+  )
+)
+

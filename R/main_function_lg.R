@@ -3,7 +3,7 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 200
+#' Napf = N = 500
 #' lag = 16
 #' Time = 1000
 #' d_ = 2
