@@ -9,7 +9,7 @@
 #'
 #' @export
 #'
-compute_fkf_filtering <- function(params, obs){
+compute_fkf <- function(params, obs){
   a0 <- params$a0
   P0 <- params$P0
   dt <- params$dt
