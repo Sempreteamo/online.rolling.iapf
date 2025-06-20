@@ -17,25 +17,25 @@ learn_psi <- function(s, psi_t, H_prev, model){
   d <- ncol(H_prev$X)
   X_prev <- H_prev$X
   log_likelihoods <- H_prev$log_li
-  
+
   log_psi <- numeric(N)
   psi_pa <- numeric(2*d)
-  
+
   if(all(is.na(psi_t))){
-    
+
     log_psi <- log_likelihoods
-    
+
   }else{
     for(i in 1:N){
       log_psi[i] <- log_likelihoods[i] + evaluate_psi_tilde(X_prev[i,], psi_t, model)
-      
+
     }
   }
-  
+  print(summary(log_psi))
   psi_pa <- optimize_psi(X_prev, log_psi)
-  
+
   return(psi_pa = psi_pa)
-  
+
 }
 
 

@@ -25,16 +25,12 @@ compute_backward_smoothing <- function(H_list) {
 
   #
   smooth_particles <- array(NA_real_, dim = c(N, T, d))
-  smooth_logW      <- matrix(NA_real_, nrow = N, ncol = T)
-
   for (t in 1:T) {
     smooth_particles[, t, ] <- H_list[[t+1]]$X[idx_path[, t], , drop = FALSE]
-    smooth_logW[, t]        <- H_list[[t+1]]$logW[idx_path[, t]]
   }
 
 
   return(smooth_particles)
 }
-
-
+#' @import stats
 

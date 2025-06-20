@@ -19,7 +19,7 @@
 #'
 #' parameters_ <- list(k = 7, tau = 0.5, kappa = 0.5)
 #'
-#'
+#
 #' obs_p <- list(obs_mean = obs_m, obs_cov = beta^2)
 #'
 #'
@@ -54,10 +54,10 @@
 #' log_ratio_apf <- vector()
 #' avg <- matrix(nrow = 1, ncol = Time)
 #' filtering_estimates <- 0
-#' 
+#'
 #' num_runs <- 1
 #' logZ_matrix_rolling_svm <- matrix(NA, nrow = num_runs, ncol = Time)
-#' 
+#'
 #' for(i in 1:num_runs){
 #' set.seed(i*2)
 #' output <- Orc_SMC(lag, data, model, N)
@@ -66,8 +66,8 @@
 #' log_ratio_rolling[i] <- compute_log_ratio(logZ_matrix_rolling_svm[i,Time], filtering)
 #' print(log_ratio_rolling[i] )
 #' }
-#' 
-#' 
+#'
+#'
 #'log_ratio <- vector()
 #'logZ <- vector()
 #'avg <- matrix(nrow = 1, ncol = Time)

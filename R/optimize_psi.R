@@ -13,6 +13,7 @@ optimize_psi <- function(x, lfn){
   params <- vector()
   d <- dim(as.matrix(x))[2]
 
+
   coef <- -stats::lm(lfn~., data.frame(cbind(x^2, x)))$coefficients
   a <- coef[2:(1+d)]
   b <- coef[(2+d):length(coef)]

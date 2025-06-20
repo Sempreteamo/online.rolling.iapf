@@ -3,12 +3,12 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
-#' Napf = N = 200
+#' Napf = N = 1000
 #' lag = 4
-#' Time = 10
-#' d_ = 2
+#' Time = 100
+#' d_ = 32
 #'
-#' alpha = 0.42
+#' alpha = 0.415
 #' tran_m <- matrix(nrow = d_, ncol = d_)
 #' for (i in 1:d_){
 #'   for (j in 1:d_){
@@ -17,13 +17,12 @@
 #' }
 #' ini <- rep(0, d_)
 #'
-#' #
-#' tran_m = diag(1, nrow = d_, ncol = d_)
+#'
 #' tran_c =  diag(1, nrow = d_, ncol = d_)
 #' ini_c = diag(1, nrow = d_, ncol = d_)
 #' obs_m = diag(1, nrow = d_, ncol = d_)
 #' obs_c = diag(1, nrow = d_, ncol = d_)
-#' parameters_ <- list(k = 7, tau = 0.5, kappa = 0.5)
+#' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
 #' obs_p <- list(obs_mean = obs_m, obs_cov = obs_c)
 #'
 #' #output <- generate_blocks(lag, Time)
@@ -35,6 +34,7 @@
 #'  eval_likelihood = evaluate_likelihood_lg, simu_observation = simulate_observation_lg,
 #'  parameters = parameters_, dist = 'lg')
 #'
+#'set.seed(1234)
 #' obs_ <- sample_obs(model, Time, d_) #provided by users
 #' #obs_ <- as.matrix(read.csv('C:/Users/ip21972/Downloads/quasi.online.iAPF.package-main/quasi.online.iAPF.package-main/try_data.csv'))
 #'
@@ -49,14 +49,7 @@
 #' params <- list(dt = dt_, ct = ct_, Tt = Tt_, P0 = P0_ , Zt = Zt_,
 #'                Ht = Ht_, Gt = Gt_, a0 = a0_, d = d_)
 #'
-#' filter <- compute_fkf(params, obs_)
-#' fkf_obj <- filter[[1]]
-#' fks_obj <- filter[[2]]
 #'
-#'filt_means <- t(fkf_obj$att)
-#'filt_covs  <- fkf_obj$Ptt
-#'smooth_means <- t(fks_obj$ahatt)
-#'smooth_covs <- fks_obj$Vt
 #'
 #'data_ =  data <- list(obs = obs_)
 #'#data <- list(obs = obs_, breaks = breaks_,
@@ -82,7 +75,25 @@
 #' })
 #' print(time_info["elapsed"])
 #'
+#'log_ratio <- vector()
 #'
+#'count = 1
+#'for(i in c(1, Time/2, Time)){
+#'filter <- compute_fkf(params, obs_[1:i,,drop = FALSE])
+#'fkf_obj <- filter[[1]]
+#'log_ratio[count] <- compute_ratio(output$logZ[i], fkf_obj)
+#'count = count + 1
+#'}
+#' filter <- compute_fkf(params, obs_)
+#' fkf_obj <- filter[[1]]
+#' fks_obj <- filter[[2]]
+#'
+#'filt_means <- t(fkf_obj$att)
+#'filt_covs  <- fkf_obj$Ptt
+#'smooth_means <- t(fks_obj$ahatt)
+#'smooth_covs <- fks_obj$Vt
+#'
+#'compute_ratio(output$logZ[Time], fkf_obj)
 #' logZ_matrix_rolling[i, ] <- output$logZ
 #' #fkf_obj_estimates <- output$f_means
 #' filter <- compute_fkf(params, obs_[1:Time,,drop = FALSE])
