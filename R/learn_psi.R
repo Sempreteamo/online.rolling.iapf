@@ -31,7 +31,7 @@ learn_psi <- function(s, psi_t, H_prev, model){
 
     }
   }
-  print(summary(log_psi))
+
   psi_pa <- optimize_psi(X_prev, log_psi)
 
   return(psi_pa = psi_pa)
