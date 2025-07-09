@@ -29,7 +29,7 @@ sample_obs <- function(model, Time, d){
 
 
     for(t in 1:Time){
-      data[t,] <- model$simu_observation(X[t,,drop = FALSE], model$obs_params)
+      data[t,] <- model$simu_observation(X[t,], model$obs_params)
 
     }
 
