@@ -2,6 +2,7 @@
 #' \dontrun{
 #' The following parameters are provided by users
 #' library(mvnfast)
+#' library(quasi.online.iAPF)
 #' library(FKF)
 #' Napf = N = 1000
 #' lag = 4
@@ -17,7 +18,7 @@
 #' }
 #' ini <- rep(0, d_)
 #'
-#'
+#' #tran_m =  diag(0.415, nrow = d_, ncol = d_)
 #' tran_c =  diag(1, nrow = d_, ncol = d_)
 #' ini_c = diag(1, nrow = d_, ncol = d_)
 #' obs_m = diag(1, nrow = d_, ncol = d_)
@@ -34,9 +35,9 @@
 #'  eval_likelihood = evaluate_likelihood_lg, simu_observation = simulate_observation_lg,
 #'  parameters = parameters_, dist = 'lg')
 #'
-#'set.seed(1234)
-#' obs_ <- sample_obs(model, Time, d_) #provided by users
-#' #obs_ <- as.matrix(read.csv('C:/Users/ip21972/Downloads/quasi.online.iAPF.package-main/quasi.online.iAPF.package-main/try_data.csv'))
+#' set.seed(1234)
+#' #obs_ <- sample_obs(model, Time, d_) #provided by users
+#' obs_ <- as.matrix(read.csv("C:/Users/14775/Downloads/data/orc_N1000T100_d32_obs_smoothing.csv", row.names = 1))
 #'
 #'a0_ = ini     # Initial state mean
 #'P0_ = ini_c    # Initial state covariance
@@ -71,7 +72,8 @@
 #' set.seed(i*2)
 #'
 #' time_info <- system.time({
-#' output <- Orc_SMC(lag, data, model, Napf)
+#' output <- Orc_SMC(lag, data, model, Napf)$H_forward
+#'
 #' })
 #' print(time_info["elapsed"])
 #'

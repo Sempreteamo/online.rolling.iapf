@@ -18,13 +18,13 @@ compute_l1_at_t <- function(data, smooth_particles, time) {
     sum = 0
     for(j in 1:d){
 
-      mu_true    <- smooth_means[t, j]
-      theta_true   <- smooth_covs[j, j, t]
-      xs        <- seq(mu_true - 4*sqrt(theta_true),
-                       mu_true + 4*sqrt(theta_true),
+      μ_true    <- smooth_means[t, j]
+      σ2_true   <- smooth_covs[j, j, t]
+      xs        <- seq(μ_true - 4*sqrt(σ2_true),
+                       μ_true + 4*sqrt(σ2_true),
                        length.out = 200)
       #cdf of the real kalman distribution
-      cdf_true <- stats::pnorm(xs, mean = mu_true, sd = sqrt(theta_true))
+      cdf_true <- pnorm(xs, mean = μ_true, sd = sqrt(σ2_true))
 
       #empirical cdf
       particles_k <- smooth_particles[, t, j]
