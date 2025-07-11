@@ -24,6 +24,8 @@ Orc_SMC <- function(lag, data, model, N) {
   
   logZ_vec <- numeric(Time)
   
+  ess_history <- numeric(Time)
+  
   X <- X_apf <- array(NA, c(Time, N, d))
   log_W_apf <- log_W <- matrix(NA, Time, N)
   log_likelihoods <- log_likelihoods_apf <- matrix(NA, Time, N)
@@ -77,6 +79,9 @@ Orc_SMC <- function(lag, data, model, N) {
                             psi_pa[s,, drop = FALSE], H[[s]], model, init = FALSE)
       
       H[[s+1]] <- output$H
+      if(s == t){
+        ess_history[t] <- output$current_ess
+      }
       
     }
     
@@ -85,5 +90,5 @@ Orc_SMC <- function(lag, data, model, N) {
     
   }
   
-  return(list(logZ = logZ_vec, f_means = filtering_estimates, H_forward  = H))
+  return(list(logZ = logZ_vec, f_means = filtering_estimates, H_forward  = H,  ess_history = ess_history))
 }
