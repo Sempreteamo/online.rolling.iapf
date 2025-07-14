@@ -4,9 +4,9 @@
 #' library(mvnfast)
 #' library(FKF)
 #' library(quasi.online.iAPF)
-#' Napf = N = 1000
-#' lag = 64
-#' Time = 100
+#' Napf = N = 100
+#' lag = 2
+#' Time = 10
 #' M = 50
 #' d_ = 1
 #'
@@ -49,7 +49,7 @@
 #'
 #' #plot(x = c(1:Time), y = avg[1,])
 #' 
-#' ess_l64 <- output$ess_history
+#' ess <- output$ess_history
 #' plot(ess)
 #' }
 #' }
