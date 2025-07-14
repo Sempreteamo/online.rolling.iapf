@@ -3,11 +3,12 @@
 #' The following parameters are provided by users
 #' library(mvnfast)
 #' library(FKF)
+#' library(quasi.online.iAPF)
 #' Napf = N = 1000
-#' lag = 2
+#' lag = 64
 #' Time = 100
 #' M = 50
-#' d_ = 2
+#' d_ = 1
 #'
 #' parameters_ <- list(k = 5, tau = 0.5, kappa = 0.5)
 #'
@@ -26,11 +27,10 @@
 #'
 #' set.seed(123)
 #' obs_ <- sample_obs(model, Time, d_)
-#'
 #' data <- list(obs = obs_)
 #'
 #'
-#'logZ <- vector()
+#' logZ <- vector()
 #'
 #' num_runs <- 1
 #'
@@ -48,6 +48,9 @@
 #' #dist <- compute_dKS(X, w, smoothing)
 #'
 #' #plot(x = c(1:Time), y = avg[1,])
+#' 
+#' ess_l64 <- output$ess_history
+#' plot(ess)
 #' }
 #' }
 
