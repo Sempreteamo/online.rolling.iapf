@@ -47,7 +47,7 @@ y_axis_label_plot <- ggplot() +
   labs(y = "Density") + 
   theme_void() + 
   theme(
-    axis.title.y = element_text(size = 16, angle = 90, face = "bold", margin = margin(r = 15)), # Y 轴标题样式
+    axis.title.y = element_text(size = 16, angle = 90, face = "bold", margin = margin(r = 15)), 
     plot.margin = margin(0,0,0,0) 
   )
 
@@ -63,7 +63,7 @@ final_plot <- y_axis_label_plot + wrap_plots(plot_list, ncol = 3) +
     caption = "Standardized Value", 
     theme = theme(
       plot.margin = margin(t = 10, r = 10, b = 10, l = 10), 
-      plot.caption = element_text(size = 16, hjust = 0.5, face = "bold", margin = margin(t = 15)) # X 轴标签样式
+      plot.caption = element_text(size = 16, hjust = 0.5, face = "bold", margin = margin(t = 15)) 
     )
   ) & 
   theme(
